@@ -6,6 +6,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="基于 TensorFlow.js 的智能物品识别系统，支持图片上传和实时摄像头检测，可识别80种常见物品">
     <meta name="keywords" content="物品识别,AI识别,TensorFlow.js,机器学习,物体检测,COCO-SSD">
+
+    <!-- iOS Safari 优化 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="物品识别">
+    <meta name="format-detection" content="telephone=no">
+
     <title>物品识别系统 - Object Recognition System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.11.0"></script>
@@ -14,6 +21,41 @@
     <style>
         body {
             font-family: 'Noto Sans SC', sans-serif;
+            /* iOS Safari 优化 */
+            -webkit-text-size-adjust: 100%;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+        }
+
+        /* iOS Safari 按钮优化 */
+        button, input[type="file"] + label {
+            -webkit-appearance: none;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        /* 防止iOS Safari橡皮筋效果 */
+        body, html {
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 视频元素在iOS上的优化 */
+        video {
+            -webkit-playsinline: true;
+            playsinline: true;
+        }
+
+        /* 触摸优化 */
+        * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+        }
+
+        /* iOS输入框优化 */
+        input[type="file"] {
+            -webkit-appearance: none;
         }
         .prediction-box {
             position: absolute;
@@ -269,7 +311,7 @@
 
                 <!-- 摄像头显示区 -->
                 <div id="cameraContainer" class="relative mb-6 hidden">
-                    <video id="webcam" autoplay playsinline class="mx-auto border-2 border-gray-300 rounded-lg"></video>
+                    <video id="webcam" autoplay playsinline webkit-playsinline muted class="mx-auto border-2 border-gray-300 rounded-lg"></video>
                     <canvas id="videoCanvas" class="absolute top-0 left-0 pointer-events-none"></canvas>
                 </div>
 
@@ -326,6 +368,54 @@
                 <p class="text-xs text-green-700 mt-3">
                     💡 提示：系统会自动检测浏览器兼容性并提供相应提示。如遇问题，请更新浏览器或换用推荐浏览器。
                 </p>
+            </div>
+
+            <!-- iPhone/移动端访问指南 -->
+            <div class="bg-purple-50 rounded-lg p-6 mt-4">
+                <h3 class="text-lg font-semibold mb-3 text-purple-900">📱 iPhone/移动端访问指南</h3>
+                <div class="text-sm text-purple-800 space-y-4">
+                    <div>
+                        <p class="font-semibold mb-2">✅ 完美支持 iOS Safari</p>
+                        <p class="text-xs mb-2">系统已针对 iPhone 进行全面优化，包括触摸操作、摄像头调用、响应式布局等。</p>
+                    </div>
+
+                    <div class="bg-white bg-opacity-50 rounded p-3">
+                        <p class="font-semibold mb-2">📍 如何在 iPhone 上访问：</p>
+                        <ol class="list-decimal list-inside space-y-1 text-xs">
+                            <li>确保 iPhone 和电脑在同一 WiFi 网络</li>
+                            <li>在电脑上运行服务器（已运行在端口 8080）</li>
+                            <li>获取电脑的 IP 地址</li>
+                            <li>在 iPhone Safari 中输入：<code class="bg-purple-200 px-1 rounded">http://电脑IP:8080</code></li>
+                            <li>点击"启动摄像头"时允许浏览器访问摄像头</li>
+                        </ol>
+                    </div>
+
+                    <div class="bg-white bg-opacity-50 rounded p-3">
+                        <p class="font-semibold mb-2">🎯 iOS 优化特性：</p>
+                        <ul class="space-y-1 text-xs">
+                            <li>✓ 自动使用后置摄像头（更适合物品识别）</li>
+                            <li>✓ 触摸操作优化，无点击延迟</li>
+                            <li>✓ 视频内联播放（不会全屏）</li>
+                            <li>✓ 响应式界面，适配各种屏幕</li>
+                            <li>✓ 防止意外缩放和橡皮筋效果</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <p class="font-semibold mb-2">⚠️ 注意事项：</p>
+                        <ul class="space-y-1 text-xs">
+                            <li>• 首次使用需允许浏览器访问摄像头权限</li>
+                            <li>• 建议使用 iOS 14+ 以获得最佳体验</li>
+                            <li>• 实时检测功能较耗电，建议连接充电器</li>
+                            <li>• 如摄像头无法启动，尝试刷新页面或重启 Safari</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-blue-100 rounded p-2 text-xs">
+                        <p class="font-semibold text-blue-900">💡 快速测试：</p>
+                        <p class="text-blue-800">如果您现在就在 iPhone 上查看此页面，直接点击上方的"上传图片"或"启动摄像头"即可开始使用！</p>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
@@ -818,8 +908,17 @@
                 });
 
                 const video = document.getElementById('webcam');
+
+                // iOS Safari 特殊处理
+                video.setAttribute('playsinline', 'true');
+                video.setAttribute('webkit-playsinline', 'true');
+                video.muted = true; // iOS需要静音才能自动播放
+
                 video.srcObject = stream;
                 webcamStream = stream;
+
+                // 确保视频开始播放（iOS需要）
+                video.play().catch(e => console.log('视频播放:', e));
 
                 video.addEventListener('loadeddata', () => {
                     const canvas = document.getElementById('videoCanvas');
