@@ -2,7 +2,10 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="基于 TensorFlow.js 的智能物品识别系统，支持图片上传和实时摄像头检测，可识别80种常见物品">
+    <meta name="keywords" content="物品识别,AI识别,TensorFlow.js,机器学习,物体检测,COCO-SSD">
     <title>物品识别系统 - Object Recognition System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.11.0"></script>
@@ -296,6 +299,34 @@
                     <li>✓ 所有处理均在浏览器本地完成，不会上传您的图片</li>
                 </ul>
             </div>
+
+            <!-- 浏览器兼容性说明 -->
+            <div class="bg-green-50 rounded-lg p-6 mt-4">
+                <h3 class="text-lg font-semibold mb-3 text-green-900">🌐 浏览器兼容性</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-green-800">
+                    <div>
+                        <p class="font-semibold mb-2">完全支持：</p>
+                        <ul class="space-y-1">
+                            <li>• Chrome 90+ / Edge 90+</li>
+                            <li>• Firefox 88+</li>
+                            <li>• Safari 14+</li>
+                            <li>• Opera 76+</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p class="font-semibold mb-2">技术要求：</p>
+                        <ul class="space-y-1">
+                            <li>• 支持 WebGL（GPU 加速）</li>
+                            <li>• 支持 Canvas API</li>
+                            <li>• 支持 ES6+ JavaScript</li>
+                            <li>• 摄像头需浏览器权限</li>
+                        </ul>
+                    </div>
+                </div>
+                <p class="text-xs text-green-700 mt-3">
+                    💡 提示：系统会自动检测浏览器兼容性并提供相应提示。如遇问题，请更新浏览器或换用推荐浏览器。
+                </p>
+            </div>
         </div>
     </main>
 
@@ -307,6 +338,203 @@
     </footer>
 
     <script>
+        // ========================================
+        // 浏览器兼容性检测和Polyfills
+        // ========================================
+
+        // 检测浏览器信息
+        function detectBrowser() {
+            const ua = navigator.userAgent;
+            let browserName = "Unknown";
+            let browserVersion = "Unknown";
+
+            if (ua.indexOf("Chrome") > -1 && ua.indexOf("Edg") === -1) {
+                browserName = "Chrome";
+                browserVersion = ua.match(/Chrome\/(\d+)/)?.[1] || "Unknown";
+            } else if (ua.indexOf("Safari") > -1 && ua.indexOf("Chrome") === -1) {
+                browserName = "Safari";
+                browserVersion = ua.match(/Version\/(\d+)/)?.[1] || "Unknown";
+            } else if (ua.indexOf("Firefox") > -1) {
+                browserName = "Firefox";
+                browserVersion = ua.match(/Firefox\/(\d+)/)?.[1] || "Unknown";
+            } else if (ua.indexOf("Edg") > -1) {
+                browserName = "Edge";
+                browserVersion = ua.match(/Edg\/(\d+)/)?.[1] || "Unknown";
+            } else if (ua.indexOf("MSIE") > -1 || ua.indexOf("Trident") > -1) {
+                browserName = "IE";
+                browserVersion = ua.match(/(?:MSIE |rv:)(\d+)/)?.[1] || "Unknown";
+            }
+
+            return { name: browserName, version: parseInt(browserVersion) };
+        }
+
+        // getUserMedia API 兼容性处理
+        (function() {
+            if (navigator.mediaDevices === undefined) {
+                navigator.mediaDevices = {};
+            }
+
+            if (navigator.mediaDevices.getUserMedia === undefined) {
+                navigator.mediaDevices.getUserMedia = function(constraints) {
+                    // 尝试使用旧版API
+                    const getUserMedia = navigator.getUserMedia ||
+                                       navigator.webkitGetUserMedia ||
+                                       navigator.mozGetUserMedia ||
+                                       navigator.msGetUserMedia;
+
+                    if (!getUserMedia) {
+                        return Promise.reject(new Error('getUserMedia 在此浏览器中不支持'));
+                    }
+
+                    return new Promise(function(resolve, reject) {
+                        getUserMedia.call(navigator, constraints, resolve, reject);
+                    });
+                };
+            }
+        })();
+
+        // requestAnimationFrame 兼容性处理
+        (function() {
+            const vendors = ['webkit', 'moz', 'ms', 'o'];
+            let lastTime = 0;
+
+            for (let x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+                window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+                window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] ||
+                                             window[vendors[x] + 'CancelRequestAnimationFrame'];
+            }
+
+            if (!window.requestAnimationFrame) {
+                window.requestAnimationFrame = function(callback) {
+                    const currTime = new Date().getTime();
+                    const timeToCall = Math.max(0, 16 - (currTime - lastTime));
+                    const id = window.setTimeout(function() {
+                        callback(currTime + timeToCall);
+                    }, timeToCall);
+                    lastTime = currTime + timeToCall;
+                    return id;
+                };
+            }
+
+            if (!window.cancelAnimationFrame) {
+                window.cancelAnimationFrame = function(id) {
+                    clearTimeout(id);
+                };
+            }
+        })();
+
+        // 检查浏览器兼容性
+        function checkBrowserCompatibility() {
+            const browser = detectBrowser();
+            const issues = [];
+
+            console.log(`检测到浏览器: ${browser.name} ${browser.version}`);
+
+            // 检查IE浏览器
+            if (browser.name === "IE") {
+                issues.push("Internet Explorer 不支持本应用所需的现代Web技术");
+            }
+
+            // 检查Canvas支持
+            const canvas = document.createElement('canvas');
+            if (!canvas.getContext || !canvas.getContext('2d')) {
+                issues.push("您的浏览器不支持 Canvas API");
+            }
+
+            // 检查WebGL支持（TensorFlow.js需要）
+            try {
+                const testCanvas = document.createElement('canvas');
+                const gl = testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl');
+                if (!gl) {
+                    issues.push("您的浏览器不支持 WebGL（AI模型运行需要）");
+                }
+            } catch (e) {
+                issues.push("WebGL 初始化失败");
+            }
+
+            // 检查FileReader支持
+            if (!window.FileReader) {
+                issues.push("您的浏览器不支持文件读取功能");
+            }
+
+            // 检查摄像头API支持
+            if (!navigator.mediaDevices && !navigator.getUserMedia &&
+                !navigator.webkitGetUserMedia && !navigator.mozGetUserMedia) {
+                issues.push("您的浏览器不支持摄像头访问（但仍可使用图片上传功能）");
+            }
+
+            return {
+                compatible: issues.length === 0,
+                issues: issues,
+                browser: browser
+            };
+        }
+
+        // 显示兼容性警告
+        function showCompatibilityWarning(issues, browser) {
+            const loader = document.getElementById('initialLoader');
+            const isCritical = issues.some(issue =>
+                issue.includes('Canvas') ||
+                issue.includes('WebGL') ||
+                issue.includes('Internet Explorer')
+            );
+
+            if (isCritical) {
+                // 严重不兼容
+                loader.querySelector('.loader-content').innerHTML = `
+                    <div class="text-white">
+                        <svg class="mx-auto h-20 w-20 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                        <p class="text-2xl font-semibold mb-4">浏览器不兼容</p>
+                        <p class="text-sm mb-4">检测到 ${browser.name} ${browser.version}</p>
+                        <div class="text-left max-w-md mx-auto mb-6 bg-white bg-opacity-20 p-4 rounded">
+                            <p class="font-semibold mb-2">发现以下问题：</p>
+                            <ul class="text-sm space-y-1">
+                                ${issues.map(issue => `<li>• ${issue}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <p class="text-sm mb-6">推荐使用以下浏览器的最新版本：</p>
+                        <div class="flex justify-center gap-4 text-sm">
+                            <div>Chrome 90+</div>
+                            <div>Firefox 88+</div>
+                            <div>Safari 14+</div>
+                            <div>Edge 90+</div>
+                        </div>
+                    </div>
+                `;
+                return false;
+            } else {
+                // 部分功能不可用，但可以继续
+                console.warn('浏览器兼容性警告:', issues);
+
+                // 显示警告但继续加载
+                if (issues.length > 0) {
+                    setTimeout(() => {
+                        const warningDiv = document.createElement('div');
+                        warningDiv.className = 'bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4';
+                        warningDiv.innerHTML = `
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm text-yellow-700 font-semibold">浏览器兼容性提示</p>
+                                    <ul class="mt-2 text-sm text-yellow-700 list-disc list-inside">
+                                        ${issues.map(issue => `<li>${issue}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            </div>
+                        `;
+                        document.querySelector('main').insertBefore(warningDiv, document.querySelector('main').firstChild);
+                    }, 1000);
+                }
+                return true;
+            }
+        }
+
         let model = null;
         let webcamStream = null;
         let isDetecting = false;
@@ -397,8 +625,25 @@
 
         // 加载模型
         async function loadModel() {
+            // 先检查浏览器兼容性
+            const compatibility = checkBrowserCompatibility();
+
+            if (!compatibility.compatible) {
+                const canContinue = showCompatibilityWarning(compatibility.issues, compatibility.browser);
+                if (!canContinue) {
+                    return; // 严重不兼容，停止加载
+                }
+            }
+
             try {
                 console.log('开始加载模型...');
+
+                // 更新加载提示
+                const loaderText = document.querySelector('.loader-subtext');
+                if (loaderText) {
+                    loaderText.textContent = '正在初始化 TensorFlow.js...';
+                }
+
                 model = await cocoSsd.load();
                 console.log('模型加载成功');
 
@@ -413,18 +658,31 @@
 
                 document.getElementById('loadingSection').classList.add('hidden');
                 document.getElementById('mainSection').classList.remove('hidden');
+
+                // 在控制台显示成功信息
+                console.log('%c✓ 系统初始化成功', 'color: #10B981; font-size: 14px; font-weight: bold;');
+                console.log(`浏览器: ${compatibility.browser.name} ${compatibility.browser.version}`);
             } catch (error) {
                 console.error('模型加载失败:', error);
 
                 // 更新加载器显示错误
                 const loader = document.getElementById('initialLoader');
+                let errorMessage = error.message;
+
+                // 提供更友好的错误信息
+                if (error.message.includes('WebGL')) {
+                    errorMessage = 'WebGL 不可用。请确保您的浏览器支持硬件加速。';
+                } else if (error.message.includes('network') || error.message.includes('fetch')) {
+                    errorMessage = '网络连接失败，无法下载AI模型。请检查您的网络连接。';
+                }
+
                 loader.querySelector('.loader-content').innerHTML = `
                     <div class="text-white">
                         <svg class="mx-auto h-20 w-20 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                         <p class="text-2xl font-semibold mb-4">模型加载失败</p>
-                        <p class="text-sm mb-6">${error.message}</p>
+                        <p class="text-sm mb-6">${errorMessage}</p>
                         <button onclick="location.reload()" class="bg-white text-purple-600 font-bold py-3 px-8 rounded-lg hover:bg-gray-100 transition duration-300">
                             重新加载
                         </button>
@@ -546,10 +804,16 @@
         // 启动摄像头
         document.getElementById('enableCamera').addEventListener('click', async () => {
             try {
+                // 检查摄像头API是否可用
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    throw new Error('您的浏览器不支持摄像头访问功能');
+                }
+
                 const stream = await navigator.mediaDevices.getUserMedia({
                     video: {
                         width: { ideal: 1280 },
-                        height: { ideal: 720 }
+                        height: { ideal: 720 },
+                        facingMode: 'environment' // 优先使用后置摄像头
                     }
                 });
 
@@ -573,7 +837,32 @@
                 });
             } catch (error) {
                 console.error('摄像头启动失败:', error);
-                alert('无法访问摄像头，请检查权限设置');
+
+                let errorMessage = '无法访问摄像头';
+                let errorDetail = '';
+
+                // 根据错误类型提供具体的提示
+                if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+                    errorMessage = '摄像头权限被拒绝';
+                    errorDetail = '请在浏览器设置中允许访问摄像头，然后刷新页面重试。';
+                } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
+                    errorMessage = '未检测到摄像头';
+                    errorDetail = '请确保您的设备有摄像头，或者尝试连接外部摄像头。';
+                } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
+                    errorMessage = '摄像头正被其他应用占用';
+                    errorDetail = '请关闭其他正在使用摄像头的应用，然后重试。';
+                } else if (error.name === 'OverconstrainedError' || error.name === 'ConstraintNotSatisfiedError') {
+                    errorMessage = '摄像头不支持请求的配置';
+                    errorDetail = '您的摄像头可能不支持高分辨率，系统将尝试使用默认设置。';
+                } else if (error.message.includes('不支持')) {
+                    errorMessage = '浏览器不支持摄像头功能';
+                    errorDetail = '请使用现代浏览器（Chrome、Firefox、Safari 或 Edge）的最新版本。';
+                } else {
+                    errorDetail = error.message;
+                }
+
+                // 显示友好的错误提示
+                alert(`${errorMessage}\n\n${errorDetail}\n\n提示：您仍可以使用图片上传功能进行物品识别。`);
             }
         });
 
