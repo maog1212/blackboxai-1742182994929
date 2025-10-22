@@ -375,8 +375,21 @@
                 <h3 class="text-lg font-semibold mb-3 text-purple-900">📱 iPhone/移动端访问指南</h3>
                 <div class="text-sm text-purple-800 space-y-4">
                     <div>
-                        <p class="font-semibold mb-2">✅ 完美支持 iOS Safari</p>
-                        <p class="text-xs mb-2">系统已针对 iPhone 进行全面优化，包括触摸操作、摄像头调用、响应式布局等。</p>
+                        <p class="font-semibold mb-2">✅ 支持所有移动浏览器</p>
+                        <p class="text-xs mb-2">系统自动检测并适配所有移动浏览器，包括：</p>
+                        <div class="grid grid-cols-2 gap-2 text-xs mt-2 mb-2">
+                            <div>• Safari (iOS)</div>
+                            <div>• Chrome (iOS/Android)</div>
+                            <div>• Firefox (iOS/Android)</div>
+                            <div>• Edge (iOS/Android)</div>
+                            <div>• Samsung Internet</div>
+                            <div>• UC Browser</div>
+                            <div>• QQ Browser</div>
+                            <div>• Opera</div>
+                        </div>
+                        <p class="text-xs text-purple-700 bg-white bg-opacity-50 p-2 rounded">
+                            💡 <strong>自动适配：</strong>无论您使用哪个浏览器打开链接，系统都会自动调整以提供最佳体验！
+                        </p>
                     </div>
 
                     <div class="bg-white bg-opacity-50 rounded p-3">
@@ -385,9 +398,13 @@
                             <li>确保 iPhone 和电脑在同一 WiFi 网络</li>
                             <li>在电脑上运行服务器（已运行在端口 8080）</li>
                             <li>获取电脑的 IP 地址</li>
-                            <li>在 iPhone Safari 中输入：<code class="bg-purple-200 px-1 rounded">http://电脑IP:8080</code></li>
+                            <li>在<strong>任意浏览器</strong>中粘贴链接：<code class="bg-purple-200 px-1 rounded">http://电脑IP:8080</code></li>
+                            <li>系统自动检测并优化（8秒后显示浏览器徽章）</li>
                             <li>点击"启动摄像头"时允许浏览器访问摄像头</li>
                         </ol>
+                        <p class="text-xs mt-2 bg-yellow-100 p-2 rounded">
+                            🌟 <strong>支持所有浏览器：</strong>Safari、Chrome、Firefox、Edge等都可以！只需粘贴链接，系统自动适配！
+                        </p>
                     </div>
 
                     <div class="bg-white bg-opacity-50 rounded p-3">
@@ -432,31 +449,156 @@
         // 浏览器兼容性检测和Polyfills
         // ========================================
 
-        // 检测浏览器信息
+        // 增强的浏览器检测 - 支持所有移动端浏览器
         function detectBrowser() {
             const ua = navigator.userAgent;
+            const platform = navigator.platform;
             let browserName = "Unknown";
             let browserVersion = "Unknown";
+            let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+            let isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+            let isAndroid = /Android/i.test(ua);
 
-            if (ua.indexOf("Chrome") > -1 && ua.indexOf("Edg") === -1) {
-                browserName = "Chrome";
-                browserVersion = ua.match(/Chrome\/(\d+)/)?.[1] || "Unknown";
-            } else if (ua.indexOf("Safari") > -1 && ua.indexOf("Chrome") === -1) {
-                browserName = "Safari";
-                browserVersion = ua.match(/Version\/(\d+)/)?.[1] || "Unknown";
-            } else if (ua.indexOf("Firefox") > -1) {
-                browserName = "Firefox";
-                browserVersion = ua.match(/Firefox\/(\d+)/)?.[1] || "Unknown";
-            } else if (ua.indexOf("Edg") > -1) {
-                browserName = "Edge";
-                browserVersion = ua.match(/Edg\/(\d+)/)?.[1] || "Unknown";
-            } else if (ua.indexOf("MSIE") > -1 || ua.indexOf("Trident") > -1) {
-                browserName = "IE";
-                browserVersion = ua.match(/(?:MSIE |rv:)(\d+)/)?.[1] || "Unknown";
+            // 详细的移动浏览器检测
+            if (isIOS) {
+                // iOS 设备上的浏览器检测
+                if (/CriOS/i.test(ua)) {
+                    browserName = "Chrome for iOS";
+                    browserVersion = ua.match(/CriOS\/(\d+)/)?.[1] || "Unknown";
+                } else if (/FxiOS/i.test(ua)) {
+                    browserName = "Firefox for iOS";
+                    browserVersion = ua.match(/FxiOS\/(\d+)/)?.[1] || "Unknown";
+                } else if (/EdgiOS/i.test(ua)) {
+                    browserName = "Edge for iOS";
+                    browserVersion = ua.match(/EdgiOS\/(\d+)/)?.[1] || "Unknown";
+                } else if (/OPiOS/i.test(ua)) {
+                    browserName = "Opera for iOS";
+                    browserVersion = ua.match(/OPiOS\/(\d+)/)?.[1] || "Unknown";
+                } else if (/Safari/i.test(ua)) {
+                    browserName = "Safari (iOS)";
+                    browserVersion = ua.match(/Version\/(\d+)/)?.[1] || "Unknown";
+                } else {
+                    browserName = "iOS WebView";
+                    browserVersion = "Unknown";
+                }
+            } else if (isAndroid) {
+                // Android 设备上的浏览器检测
+                if (/Chrome/i.test(ua) && !/Edg/i.test(ua)) {
+                    browserName = "Chrome for Android";
+                    browserVersion = ua.match(/Chrome\/(\d+)/)?.[1] || "Unknown";
+                } else if (/Firefox/i.test(ua)) {
+                    browserName = "Firefox for Android";
+                    browserVersion = ua.match(/Firefox\/(\d+)/)?.[1] || "Unknown";
+                } else if (/Edg/i.test(ua)) {
+                    browserName = "Edge for Android";
+                    browserVersion = ua.match(/Edg\/(\d+)/)?.[1] || "Unknown";
+                } else if (/SamsungBrowser/i.test(ua)) {
+                    browserName = "Samsung Internet";
+                    browserVersion = ua.match(/SamsungBrowser\/(\d+)/)?.[1] || "Unknown";
+                } else if (/UCBrowser/i.test(ua)) {
+                    browserName = "UC Browser";
+                    browserVersion = ua.match(/UCBrowser\/(\d+)/)?.[1] || "Unknown";
+                } else if (/MQQBrowser/i.test(ua)) {
+                    browserName = "QQ Browser";
+                    browserVersion = ua.match(/MQQBrowser\/(\d+)/)?.[1] || "Unknown";
+                } else if (/MiuiBrowser/i.test(ua)) {
+                    browserName = "MIUI Browser";
+                    browserVersion = ua.match(/MiuiBrowser\/(\d+)/)?.[1] || "Unknown";
+                } else {
+                    browserName = "Android WebView";
+                    browserVersion = "Unknown";
+                }
+            } else {
+                // 桌面浏览器检测
+                if (ua.indexOf("Chrome") > -1 && ua.indexOf("Edg") === -1) {
+                    browserName = "Chrome";
+                    browserVersion = ua.match(/Chrome\/(\d+)/)?.[1] || "Unknown";
+                } else if (ua.indexOf("Safari") > -1 && ua.indexOf("Chrome") === -1) {
+                    browserName = "Safari";
+                    browserVersion = ua.match(/Version\/(\d+)/)?.[1] || "Unknown";
+                } else if (ua.indexOf("Firefox") > -1) {
+                    browserName = "Firefox";
+                    browserVersion = ua.match(/Firefox\/(\d+)/)?.[1] || "Unknown";
+                } else if (ua.indexOf("Edg") > -1) {
+                    browserName = "Edge";
+                    browserVersion = ua.match(/Edg\/(\d+)/)?.[1] || "Unknown";
+                } else if (ua.indexOf("MSIE") > -1 || ua.indexOf("Trident") > -1) {
+                    browserName = "IE";
+                    browserVersion = ua.match(/(?:MSIE |rv:)(\d+)/)?.[1] || "Unknown";
+                }
             }
 
-            return { name: browserName, version: parseInt(browserVersion) };
+            return {
+                name: browserName,
+                version: parseInt(browserVersion) || 0,
+                isMobile: isMobile,
+                isIOS: isIOS,
+                isAndroid: isAndroid,
+                fullUA: ua
+            };
         }
+
+        // 自适应浏览器配置
+        function getAdaptiveConfig(browser) {
+            const config = {
+                useBackCamera: true,
+                videoConstraints: {
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
+                },
+                needsPlayClick: false,
+                supportsInlineVideo: true,
+                requiresMuted: false,
+                useWebGL: true,
+                optimizeForMobile: browser.isMobile
+            };
+
+            // iOS 特殊配置
+            if (browser.isIOS) {
+                config.requiresMuted = true; // iOS 需要静音才能自动播放
+                config.videoConstraints.facingMode = 'environment'; // 优先后置摄像头
+
+                // iOS Safari 特殊处理
+                if (browser.name.includes("Safari")) {
+                    config.supportsInlineVideo = browser.version >= 10;
+                }
+
+                // iOS Chrome/Firefox 需要特殊处理
+                if (browser.name.includes("Chrome") || browser.name.includes("Firefox")) {
+                    config.needsPlayClick = false; // 这些浏览器在iOS上行为类似Safari
+                }
+            }
+
+            // Android 特殊配置
+            if (browser.isAndroid) {
+                config.videoConstraints.facingMode = 'environment';
+
+                // UC/QQ 浏览器可能需要降级
+                if (browser.name.includes("UC") || browser.name.includes("QQ")) {
+                    config.videoConstraints = {
+                        width: { ideal: 640 },
+                        height: { ideal: 480 }
+                    };
+                }
+            }
+
+            // 移动设备通用优化
+            if (browser.isMobile) {
+                // 降低视频分辨率以提升性能
+                if (config.videoConstraints.width.ideal > 1280) {
+                    config.videoConstraints.width.ideal = 1280;
+                    config.videoConstraints.height.ideal = 720;
+                }
+            }
+
+            return config;
+        }
+
+        // 全局配置
+        let browserInfo = null;
+        let adaptiveConfig = null;
+
+        // 检测浏览器信息
 
         // getUserMedia API 兼容性处理
         (function() {
@@ -518,7 +660,20 @@
             const browser = detectBrowser();
             const issues = [];
 
-            console.log(`检测到浏览器: ${browser.name} ${browser.version}`);
+            // 保存到全局变量
+            browserInfo = browser;
+            adaptiveConfig = getAdaptiveConfig(browser);
+
+            // 显示浏览器信息
+            const browserLabel = browser.isMobile ?
+                `${browser.name} (${browser.isIOS ? 'iOS' : browser.isAndroid ? 'Android' : '移动设备'})` :
+                browser.name;
+
+            console.log(`%c🌐 浏览器检测`, 'color: #3B82F6; font-size: 14px; font-weight: bold;');
+            console.log(`名称: ${browserLabel}`);
+            console.log(`版本: ${browser.version}`);
+            console.log(`移动设备: ${browser.isMobile ? '是' : '否'}`);
+            console.log(`自适应配置:`, adaptiveConfig);
 
             // 检查IE浏览器
             if (browser.name === "IE") {
@@ -553,11 +708,52 @@
                 issues.push("您的浏览器不支持摄像头访问（但仍可使用图片上传功能）");
             }
 
+            // 显示浏览器信息到页面
+            displayBrowserInfo(browser);
+
             return {
                 compatible: issues.length === 0,
                 issues: issues,
                 browser: browser
             };
+        }
+
+        // 在页面上显示浏览器信息
+        function displayBrowserInfo(browser) {
+            const browserBadge = document.createElement('div');
+            browserBadge.id = 'browserBadge';
+            browserBadge.className = 'fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50';
+            browserBadge.style.maxWidth = '300px';
+
+            const deviceType = browser.isIOS ? '📱 iOS' : browser.isAndroid ? '📱 Android' : '🖥️ 桌面';
+            const optimized = browser.isMobile ? '✅ 已优化' : '✅ 完全支持';
+
+            browserBadge.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="font-semibold">${deviceType} ${browser.name}</div>
+                        <div class="text-xs opacity-90">${optimized}</div>
+                    </div>
+                    <button onclick="document.getElementById('browserBadge').style.display='none'" class="ml-3 text-white hover:text-gray-200">
+                        ✕
+                    </button>
+                </div>
+            `;
+
+            // 3秒后自动隐藏
+            setTimeout(() => {
+                if (browserBadge && browserBadge.parentNode) {
+                    browserBadge.style.opacity = '0';
+                    browserBadge.style.transition = 'opacity 0.5s';
+                    setTimeout(() => {
+                        if (browserBadge.parentNode) {
+                            browserBadge.remove();
+                        }
+                    }, 500);
+                }
+            }, 8000);
+
+            document.body.appendChild(browserBadge);
         }
 
         // 显示兼容性警告
@@ -899,26 +1095,38 @@
                     throw new Error('您的浏览器不支持摄像头访问功能');
                 }
 
+                // 使用自适应配置
+                const config = adaptiveConfig || getAdaptiveConfig(browserInfo || detectBrowser());
+
+                console.log('%c📹 启动摄像头', 'color: #10B981; font-size: 14px; font-weight: bold;');
+                console.log('使用配置:', config.videoConstraints);
+                console.log('浏览器:', browserInfo ? browserInfo.name : '未知');
+
+                // 根据自适应配置设置视频参数
+                const videoConstraints = { ...config.videoConstraints };
+
                 const stream = await navigator.mediaDevices.getUserMedia({
-                    video: {
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 },
-                        facingMode: 'environment' // 优先使用后置摄像头
-                    }
+                    video: videoConstraints
                 });
 
                 const video = document.getElementById('webcam');
 
-                // iOS Safari 特殊处理
+                // 根据配置应用视频属性
                 video.setAttribute('playsinline', 'true');
                 video.setAttribute('webkit-playsinline', 'true');
-                video.muted = true; // iOS需要静音才能自动播放
+
+                if (config.requiresMuted) {
+                    video.muted = true; // iOS和某些移动浏览器需要静音才能自动播放
+                }
 
                 video.srcObject = stream;
                 webcamStream = stream;
 
-                // 确保视频开始播放（iOS需要）
-                video.play().catch(e => console.log('视频播放:', e));
+                // 确保视频开始播放
+                video.play().catch(e => {
+                    console.log('视频自动播放被阻止，尝试用户交互后播放:', e);
+                    // 有些浏览器需要用户交互才能播放
+                });
 
                 video.addEventListener('loadeddata', () => {
                     const canvas = document.getElementById('videoCanvas');
