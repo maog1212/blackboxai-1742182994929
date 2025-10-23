@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人生规划助手 - Life Planning Assistant</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎯 人生规划助手</h1>
+            <p class="subtitle">由 DeepSeek AI 驱动的专属人生规划顾问</p>
+        </header>
+
+        <div class="settings-panel" id="settingsPanel">
+            <div class="settings-header">
+                <h3>设置</h3>
+                <button id="closeSettings" class="btn-close">×</button>
+            </div>
+            <div class="settings-content">
+                <label for="apiKey">DeepSeek API Key:</label>
+                <input type="password" id="apiKey" placeholder="输入您的 DeepSeek API Key">
+                <small>您的API密钥将保存在浏览器本地，不会上传到服务器</small>
+                <button id="saveSettings" class="btn-primary">保存设置</button>
+            </div>
+        </div>
+
+        <div class="chat-container">
+            <div class="welcome-message" id="welcomeMessage">
+                <div class="welcome-content">
+                    <h2>👋 欢迎使用人生规划助手</h2>
+                    <p>我是您的专属人生规划顾问，可以帮助您：</p>
+                    <ul>
+                        <li>📋 制定短期和长期目标</li>
+                        <li>💼 规划职业发展路径</li>
+                        <li>📚 制定学习成长计划</li>
+                        <li>💰 财务规划和建议</li>
+                        <li>⚖️ 工作生活平衡指导</li>
+                        <li>🎯 目标跟踪与反思</li>
+                    </ul>
+                    <p class="cta">请先配置您的 API Key，然后开始对话吧！</p>
+                </div>
+            </div>
+
+            <div id="chatMessages" class="chat-messages"></div>
+
+            <div class="chat-input-container">
+                <textarea
+                    id="userInput"
+                    placeholder="输入您的问题或想法...（按 Enter 发送，Shift+Enter 换行）"
+                    rows="1"
+                ></textarea>
+                <button id="sendButton" class="btn-send">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <button class="quick-btn" data-prompt="帮我制定一个3个月的学习计划">📚 学习计划</button>
+            <button class="quick-btn" data-prompt="我想规划一下职业发展，给我一些建议">💼 职业规划</button>
+            <button class="quick-btn" data-prompt="帮我分析如何平衡工作和生活">⚖️ 生活平衡</button>
+            <button class="quick-btn" data-prompt="我想设定一些人生目标，你能帮我吗？">🎯 目标设定</button>
+        </div>
+
+        <button id="settingsButton" class="btn-settings">⚙️</button>
+        <button id="clearChat" class="btn-clear">🗑️ 清空对话</button>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
