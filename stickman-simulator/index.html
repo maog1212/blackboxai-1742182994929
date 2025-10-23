@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>火柴人走路学习模拟器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 50%, #90EE90 50%, #C8E6C9 100%);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .stage-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .stage-btn.active {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .info-panel {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .info-panel h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .info-panel p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-label {
+            color: #888;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            color: #333;
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚶 火柴人走路学习模拟器</h1>
+        <p class="subtitle">观察从婴儿到成人的行走发展过程</p>
+
+        <canvas id="canvas"></canvas>
+
+        <div class="controls">
+            <button class="stage-btn active" onclick="setStage('baby')">👶 婴儿爬行</button>
+            <button class="stage-btn" onclick="setStage('toddler')">🧒 学步期</button>
+            <button class="stage-btn" onclick="setStage('child')">👦 儿童走路</button>
+            <button class="stage-btn" onclick="setStage('adult')">🧑 成人走路</button>
+        </div>
+
+        <div class="controls">
+            <button class="control-btn" onclick="toggleAnimation()">⏯️ 暂停/继续</button>
+            <button class="control-btn" onclick="resetAnimation()">🔄 重置</button>
+            <button class="control-btn" onclick="changeSpeed()">⚡ 速度: <span id="speedLabel">正常</span></button>
+        </div>
+
+        <div class="info-panel">
+            <h3 id="stageTitle">当前阶段：婴儿爬行期</h3>
+            <p id="stageDescription">婴儿通常在6-10个月开始爬行，这是学习行走前的重要阶段，帮助发展肌肉力量和协调能力。</p>
+
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-label">距离</div>
+                    <div class="stat-value" id="distance">0m</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">时间</div>
+                    <div class="stat-value" id="time">0s</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">步数</div>
+                    <div class="stat-value" id="steps">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // 设置 canvas 实际分辨率
+        canvas.width = 800;
+        canvas.height = 400;
+
+        // 动画状态
+        let currentStage = 'baby';
+        let animationFrame = 0;
+        let isPlaying = true;
+        let speed = 1;
+        let speedLevel = 0;
+        const speeds = [0.5, 1, 2];
+        const speedLabels = ['慢速', '正常', '快速'];
+
+        // 统计数据
+        let distance = 0;
+        let time = 0;
+        let steps = 0;
+
+        // 阶段信息
+        const stageInfo = {
+            baby: {
+                title: '当前阶段：婴儿爬行期 (6-10个月)',
+                description: '婴儿通过爬行来探索世界，这个阶段帮助发展肌肉力量、平衡能力和空间感知。爬行对大脑发育和四肢协调非常重要。',
+                size: 0.6,
+                speed: 0.5
+            },
+            toddler: {
+                title: '当前阶段：学步期 (10-18个月)',
+                description: '学步儿童刚开始独立行走，步态不稳定，经常摇晃和跌倒。他们的腿部肌肉和平衡能力正在快速发展，需要不断练习。',
+                size: 0.8,
+                speed: 0.8
+            },
+            child: {
+                title: '当前阶段：儿童期 (2-5岁)',
+                description: '儿童已经能够稳定行走，开始学会跑步和跳跃。他们的步态更加协调，能够控制速度和方向，运动能力显著提高。',
+                size: 1.0,
+                speed: 1.2
+            },
+            adult: {
+                title: '当前阶段：成人期',
+                description: '成人拥有完全发育的运动系统，行走流畅、高效且协调。步态稳定，能量消耗优化，可以长时间保持行走。',
+                size: 1.2,
+                speed: 1.5
+            }
+        };
+
+        // 火柴人类
+        class Stickman {
+            constructor(x, y, size) {
+                this.x = x;
+                this.y = y;
+                this.size = size;
+                this.angle = 0;
+            }
+
+            drawBaby(frame) {
+                const crawlCycle = Math.sin(frame * 0.15) * 0.3;
+                const bobbing = Math.abs(Math.sin(frame * 0.15)) * 5;
+
+                ctx.save();
+                ctx.translate(this.x, this.y - bobbing);
+                ctx.scale(this.size, this.size);
+
+                // 身体（水平）
+                ctx.strokeStyle = '#2c3e50';
+                ctx.lineWidth = 4;
+                ctx.lineCap = 'round';
+
+                // 躯干
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(30, 0);
+                ctx.stroke();
+
+                // 头部
+                ctx.beginPath();
+                ctx.arc(-10, -5, 12, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.fillStyle = '#ffe0bd';
+                ctx.fill();
+
+                // 眼睛
+                ctx.fillStyle = '#2c3e50';
+                ctx.beginPath();
+                ctx.arc(-12, -7, 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(-7, -7, 2, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 爬行的手臂
+                ctx.strokeStyle = '#2c3e50';
+                ctx.lineWidth = 3;
+
+                // 左臂
+                const leftArmAngle = crawlCycle;
+                ctx.beginPath();
+                ctx.moveTo(5, 0);
+                ctx.lineTo(5 + Math.cos(leftArmAngle - 0.5) * 20, Math.sin(leftArmAngle - 0.5) * 20 + 15);
+                ctx.stroke();
+
+                // 右臂
+                const rightArmAngle = -crawlCycle;
+                ctx.beginPath();
+                ctx.moveTo(25, 0);
+                ctx.lineTo(25 + Math.cos(rightArmAngle - 0.5) * 20, Math.sin(rightArmAngle - 0.5) * 20 + 15);
+                ctx.stroke();
+
+                // 爬行的腿
+                // 左腿
+                ctx.beginPath();
+                ctx.moveTo(10, 0);
+                ctx.lineTo(10 - Math.cos(rightArmAngle) * 15, 20);
+                ctx.stroke();
+
+                // 右腿
+                ctx.beginPath();
+                ctx.moveTo(20, 0);
+                ctx.lineTo(20 - Math.cos(leftArmAngle) * 15, 20);
+                ctx.stroke();
+
+                ctx.restore();
+            }
+
+            drawToddler(frame) {
+                const wobble = Math.sin(frame * 0.12) * 0.4;
+                const stepCycle = Math.sin(frame * 0.12);
+                const bobbing = Math.abs(Math.sin(frame * 0.12)) * 8;
+
+                ctx.save();
+                ctx.translate(this.x, this.y - bobbing);
+                ctx.rotate(wobble * 0.1);
+                ctx.scale(this.size, this.size);
+
+                ctx.strokeStyle = '#2c3e50';
+                ctx.lineWidth = 4;
+                ctx.lineCap = 'round';
+
+                // 身体
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(0, 40);
+                ctx.stroke();
+
+                // 头部
+                ctx.beginPath();
+                ctx.arc(0, -10, 15, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.fillStyle = '#ffe0bd';
+                ctx.fill();
+
+                // 眼睛
+                ctx.fillStyle = '#2c3e50';
+                ctx.beginPath();
+                ctx.arc(-5, -12, 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(5, -12, 2, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 摇晃的手臂
+                ctx.lineWidth = 3;
+
+                // 左臂（用于平衡）
+                ctx.beginPath();
+                ctx.moveTo(-2, 10);
+                const leftArmX = -2 - Math.cos(wobble + 0.5) * 25;
+                const leftArmY = 10 + Math.sin(wobble + 0.5) * 20;
+                ctx.lineTo(leftArmX, leftArmY);
+                ctx.stroke();
+
+                // 右臂（用于平衡）
+                ctx.beginPath();
+                ctx.moveTo(2, 10);
+                const rightArmX = 2 + Math.cos(wobble + 0.5) * 25;
+                const rightArmY = 10 + Math.sin(wobble + 0.5) * 20;
+                ctx.lineTo(rightArmX, rightArmY);
+                ctx.stroke();
+
+                // 不稳定的腿
+                // 左腿
+                ctx.beginPath();
+                ctx.moveTo(-3, 40);
+                const leftLegX = -3 - 10 + stepCycle * 15;
+                const leftLegY = 40 + 35 - Math.abs(stepCycle) * 8;
+                ctx.lineTo(leftLegX, leftLegY);
+                ctx.stroke();
+
+                // 右腿
+                ctx.beginPath();
+                ctx.moveTo(3, 40);
+                const rightLegX = 3 + 10 - stepCycle * 15;
+                const rightLegY = 40 + 35 - Math.abs(stepCycle) * 8;
+                ctx.lineTo(rightLegX, rightLegY);
+                ctx.stroke();
+
+                ctx.restore();
+            }
+
+            drawChild(frame) {
+                const stepCycle = Math.sin(frame * 0.15);
+                const bobbing = Math.abs(Math.sin(frame * 0.15)) * 6;
+
+                ctx.save();
+                ctx.translate(this.x, this.y - bobbing);
+                ctx.scale(this.size, this.size);
+
+                ctx.strokeStyle = '#2c3e50';
+                ctx.lineWidth = 4;
+                ctx.lineCap = 'round';
+
+                // 身体
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(0, 45);
+                ctx.stroke();
+
+                // 头部
+                ctx.beginPath();
+                ctx.arc(0, -12, 16, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.fillStyle = '#ffe0bd';
+                ctx.fill();
+
+                // 眼睛
+                ctx.fillStyle = '#2c3e50';
+                ctx.beginPath();
+                ctx.arc(-5, -14, 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(5, -14, 2, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 微笑
+                ctx.strokeStyle = '#2c3e50';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(0, -8, 6, 0, Math.PI);
+                ctx.stroke();
+
+                ctx.lineWidth = 3;
+
+                // 自然摆动的手臂
+                // 左臂
+                ctx.beginPath();
+                ctx.moveTo(-3, 12);
+                ctx.lineTo(-3 - stepCycle * 20, 12 + 25);
+                ctx.stroke();
+
+                // 右臂
+                ctx.beginPath();
+                ctx.moveTo(3, 12);
+                ctx.lineTo(3 + stepCycle * 20, 12 + 25);
+                ctx.stroke();
+
+                // 稳定的腿
+                // 左腿
+                ctx.beginPath();
+                ctx.moveTo(-4, 45);
+                const leftKneeX = -4 + stepCycle * 12;
+                const leftKneeY = 45 + 20;
+                ctx.lineTo(leftKneeX, leftKneeY);
+                ctx.lineTo(-4 + stepCycle * 15, 45 + 40 - Math.abs(stepCycle) * 10);
+                ctx.stroke();
+
+                // 右腿
+                ctx.beginPath();
+                ctx.moveTo(4, 45);
+                const rightKneeX = 4 - stepCycle * 12;
+                const rightKneeY = 45 + 20;
+                ctx.lineTo(rightKneeX, rightKneeY);
+                ctx.lineTo(4 - stepCycle * 15, 45 + 40 - Math.abs(stepCycle) * 10);
+                ctx.stroke();
+
+                ctx.restore();
+            }
+
+            drawAdult(frame) {
+                const stepCycle = Math.sin(frame * 0.18);
+                const bobbing = Math.abs(Math.sin(frame * 0.18)) * 4;
+
+                ctx.save();
+                ctx.translate(this.x, this.y - bobbing);
+                ctx.scale(this.size, this.size);
+
+                ctx.strokeStyle = '#2c3e50';
+                ctx.lineWidth = 4;
+                ctx.lineCap = 'round';
+
+                // 身体
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(0, 50);
+                ctx.stroke();
+
+                // 头部
+                ctx.beginPath();
+                ctx.arc(0, -14, 18, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.fillStyle = '#ffe0bd';
+                ctx.fill();
+
+                // 眼睛
+                ctx.fillStyle = '#2c3e50';
+                ctx.beginPath();
+                ctx.arc(-6, -16, 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(6, -16, 2, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.lineWidth = 4;
+
+                // 流畅的手臂摆动
+                // 左臂
+                ctx.beginPath();
+                ctx.moveTo(-4, 15);
+                const leftElbowX = -4 - stepCycle * 10;
+                const leftElbowY = 15 + 20;
+                ctx.lineTo(leftElbowX, leftElbowY);
+                ctx.lineTo(-4 - stepCycle * 18, 15 + 40);
+                ctx.stroke();
+
+                // 右臂
+                ctx.beginPath();
+                ctx.moveTo(4, 15);
+                const rightElbowX = 4 + stepCycle * 10;
+                const rightElbowY = 15 + 20;
+                ctx.lineTo(rightElbowX, rightElbowY);
+                ctx.lineTo(4 + stepCycle * 18, 15 + 40);
+                ctx.stroke();
+
+                // 流畅的腿部运动
+                // 左腿
+                ctx.beginPath();
+                ctx.moveTo(-5, 50);
+                const leftKneeX = -5 + stepCycle * 15;
+                const leftKneeY = 50 + 25;
+                ctx.lineTo(leftKneeX, leftKneeY);
+                ctx.lineTo(-5 + stepCycle * 20, 50 + 50 - Math.abs(stepCycle) * 12);
+                ctx.stroke();
+
+                // 右腿
+                ctx.beginPath();
+                ctx.moveTo(5, 50);
+                const rightKneeX = 5 - stepCycle * 15;
+                const rightKneeY = 50 + 25;
+                ctx.lineTo(rightKneeX, rightKneeY);
+                ctx.lineTo(5 - stepCycle * 20, 50 + 50 - Math.abs(stepCycle) * 12);
+                ctx.stroke();
+
+                ctx.restore();
+            }
+
+            draw(stage, frame) {
+                switch(stage) {
+                    case 'baby':
+                        this.drawBaby(frame);
+                        break;
+                    case 'toddler':
+                        this.drawToddler(frame);
+                        break;
+                    case 'child':
+                        this.drawChild(frame);
+                        break;
+                    case 'adult':
+                        this.drawAdult(frame);
+                        break;
+                }
+            }
+        }
+
+        // 创建火柴人
+        let stickman = new Stickman(100, 280, stageInfo[currentStage].size);
+
+        // 绘制地面和背景
+        function drawBackground() {
+            // 天空
+            const skyGradient = ctx.createLinearGradient(0, 0, 0, 200);
+            skyGradient.addColorStop(0, '#87CEEB');
+            skyGradient.addColorStop(1, '#E0F6FF');
+            ctx.fillStyle = skyGradient;
+            ctx.fillRect(0, 0, canvas.width, 200);
+
+            // 太阳
+            ctx.fillStyle = '#FFD700';
+            ctx.beginPath();
+            ctx.arc(700, 80, 40, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 云朵
+            function drawCloud(x, y) {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.beginPath();
+                ctx.arc(x, y, 20, 0, Math.PI * 2);
+                ctx.arc(x + 25, y, 25, 0, Math.PI * 2);
+                ctx.arc(x + 50, y, 20, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            drawCloud(150, 80);
+            drawCloud(500, 120);
+
+            // 草地
+            const grassGradient = ctx.createLinearGradient(0, 200, 0, canvas.height);
+            grassGradient.addColorStop(0, '#90EE90');
+            grassGradient.addColorStop(1, '#C8E6C9');
+            ctx.fillStyle = grassGradient;
+            ctx.fillRect(0, 200, canvas.width, canvas.height - 200);
+
+            // 地面线
+            ctx.strokeStyle = '#228B22';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, 200);
+            ctx.lineTo(canvas.width, 200);
+            ctx.stroke();
+
+            // 草丛装饰
+            ctx.strokeStyle = '#228B22';
+            ctx.lineWidth = 2;
+            for (let i = 0; i < 20; i++) {
+                const x = i * 40 + (animationFrame % 40);
+                ctx.beginPath();
+                ctx.moveTo(x, 200);
+                ctx.lineTo(x - 3, 190);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(x + 10, 200);
+                ctx.lineTo(x + 7, 192);
+                ctx.stroke();
+            }
+        }
+
+        // 动画循环
+        function animate() {
+            if (isPlaying) {
+                animationFrame += speed;
+
+                // 更新位置
+                const moveSpeed = stageInfo[currentStage].speed * speed;
+                stickman.x += moveSpeed;
+
+                // 重置位置
+                if (stickman.x > canvas.width + 50) {
+                    stickman.x = -50;
+                    steps++;
+                    updateStats();
+                }
+
+                // 更新统计
+                distance += moveSpeed * 0.01;
+                time += 0.016 * speed;
+                updateStats();
+            }
+
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 绘制背景
+            drawBackground();
+
+            // 绘制火柴人
+            stickman.draw(currentStage, animationFrame);
+
+            requestAnimationFrame(animate);
+        }
+
+        // 更新统计数据
+        function updateStats() {
+            document.getElementById('distance').textContent = distance.toFixed(1) + 'm';
+            document.getElementById('time').textContent = time.toFixed(1) + 's';
+            document.getElementById('steps').textContent = steps;
+        }
+
+        // 设置阶段
+        function setStage(stage) {
+            currentStage = stage;
+            stickman.size = stageInfo[stage].size;
+
+            // 更新按钮状态
+            document.querySelectorAll('.stage-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // 更新信息面板
+            document.getElementById('stageTitle').textContent = stageInfo[stage].title;
+            document.getElementById('stageDescription').textContent = stageInfo[stage].description;
+
+            // 重置位置
+            stickman.x = 100;
+        }
+
+        // 切换动画
+        function toggleAnimation() {
+            isPlaying = !isPlaying;
+        }
+
+        // 重置动画
+        function resetAnimation() {
+            animationFrame = 0;
+            distance = 0;
+            time = 0;
+            steps = 0;
+            stickman.x = 100;
+            updateStats();
+        }
+
+        // 改变速度
+        function changeSpeed() {
+            speedLevel = (speedLevel + 1) % speeds.length;
+            speed = speeds[speedLevel];
+            document.getElementById('speedLabel').textContent = speedLabels[speedLevel];
+        }
+
+        // 开始动画
+        animate();
+    </script>
+</body>
+</html>
