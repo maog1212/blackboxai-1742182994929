@@ -1,0 +1,34 @@
+# 小莫 DeepSeek-OCR 依赖包
+
+# 深度学习框架
+torch>=2.6.0
+torchvision>=0.21.0
+
+# DeepSeek-OCR 核心依赖
+transformers>=4.50.0
+vllm>=0.8.5
+flash-attn>=2.7.3
+
+# 图像处理
+Pillow>=10.0.0
+pdf2image>=1.16.0
+
+# Web服务
+flask>=3.1.0
+flask-cors>=5.0.0
+
+# 工具库
+numpy>=1.24.0
+opencv-python>=4.8.0
+
+# 可选：加速推理
+accelerate>=0.26.0
+optimum>=1.16.0
+
+# 系统依赖说明
+# Ubuntu/Debian:
+#   sudo apt-get install poppler-utils
+# macOS:
+#   brew install poppler
+# Windows:
+#   下载poppler并添加到PATH: http://blog.alivate.com.au/poppler-windows/
