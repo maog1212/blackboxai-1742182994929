@@ -1,0 +1,27 @@
+# 小莫 OCR - macOS 专用依赖
+# 优化for Apple Silicon (M1/M2/M3) 和 Intel
+
+# PyTorch (自动检测 Apple Silicon MPS 支持)
+torch>=2.0.0
+torchvision>=0.15.0
+torchaudio>=2.0.0
+
+# Transformers (核心)
+transformers>=4.46.0
+tokenizers>=0.20.0
+
+# 图像处理
+Pillow>=10.0.0
+pdf2image>=1.16.0
+
+# 工具库
+numpy>=1.24.0
+einops>=0.7.0
+addict>=2.4.0
+easydict>=1.10
+
+# 注意事项:
+# 1. Apple Silicon (M1/M2/M3) 会自动使用 MPS 加速
+# 2. Intel Mac 会使用 CPU 模式
+# 3. poppler 需要通过 Homebrew 安装: brew install poppler
+# 4. 不需要 CUDA/vLLM，使用原生 PyTorch
