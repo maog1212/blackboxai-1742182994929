@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="小莫OCR">
+    <title>小莫 OCR - iPhone 版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+
+        .container {
+            max-width: 430px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 0 30px;
+        }
+
+        .logo {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 25px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+            text-decoration: none;
+            display: block;
+        }
+
+        .action-btn:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .action-btn .icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .action-btn .text {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .settings-panel {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .setting-group {
+            margin-bottom: 20px;
+        }
+
+        .setting-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .setting-label {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .setting-label .icon {
+            margin-right: 8px;
+        }
+
+        .mode-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .mode-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 8px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .mode-btn.active {
+            background: white;
+            color: #667eea;
+        }
+
+        .resolution-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .resolution-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 10px;
+            padding: 10px 5px;
+            color: white;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .resolution-btn.active {
+            background: white;
+            color: #667eea;
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 20px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .result-card.show {
+            display: block;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .result-header .title {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .result-text {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            line-height: 1.6;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            color: white;
+            width: 100%;
+            font-size: 15px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .copy-btn:active {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .processing {
+            text-align: center;
+            padding: 60px 20px;
+            display: none;
+        }
+
+        .processing.show {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            opacity: 0.6;
+        }
+
+        .empty-state .icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        /* iPhone 15 Pro Max 优化 */
+        @media (max-width: 430px) {
+            .container {
+                padding: 15px;
+            }
+
+            .header {
+                padding: 30px 0 20px;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+
+            .logo {
+                font-size: 50px;
+            }
+        }
+
+        /* 深色模式适配 */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <div class="logo">📄</div>
+            <h1>小莫 OCR</h1>
+            <div class="subtitle">DeepSeek 智能文字识别</div>
+        </div>
+
+        <!-- 快速操作 -->
+        <div class="quick-actions">
+            <label for="cameraInput" class="action-btn">
+                <div class="icon">📷</div>
+                <div class="text">拍照识别</div>
+            </label>
+            <label for="fileInput" class="action-btn">
+                <div class="icon">🖼️</div>
+                <div class="text">相册选择</div>
+            </label>
+        </div>
+
+        <input type="file" id="cameraInput" accept="image/*" capture="environment">
+        <input type="file" id="fileInput" accept="image/*">
+
+        <!-- 设置面板 -->
+        <div class="settings-panel">
+            <div class="setting-group">
+                <div class="setting-label">
+                    <span class="icon">✨</span>
+                    <span>识别模式</span>
+                </div>
+                <div class="mode-buttons">
+                    <button class="mode-btn active" data-mode="general">
+                        <span>📝</span>
+                        <span>通用</span>
+                    </button>
+                    <button class="mode-btn" data-mode="doc2md">
+                        <span>📄</span>
+                        <span>文档</span>
+                    </button>
+                    <button class="mode-btn" data-mode="figure">
+                        <span>📊</span>
+                        <span>图表</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <div class="setting-label">
+                    <span class="icon">⚙️</span>
+                    <span>识别精度</span>
+                </div>
+                <div class="resolution-buttons">
+                    <button class="resolution-btn" data-resolution="512">快速</button>
+                    <button class="resolution-btn" data-resolution="768">均衡</button>
+                    <button class="resolution-btn active" data-resolution="1024">高清</button>
+                    <button class="resolution-btn" data-resolution="1280">极致</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 处理中 -->
+        <div class="processing" id="processing">
+            <div class="spinner"></div>
+            <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">正在识别中...</div>
+            <div style="opacity: 0.8;">请稍候，AI 正在分析图片</div>
+        </div>
+
+        <!-- 结果卡片 -->
+        <div class="result-card" id="resultCard">
+            <div class="result-header">
+                <div class="title">
+                    <span style="margin-right: 8px;">✅</span>
+                    <span>识别结果</span>
+                </div>
+            </div>
+            <div class="result-text" id="resultText"></div>
+            <button class="copy-btn" onclick="copyResult()">📋 复制文本</button>
+        </div>
+
+        <!-- 空状态 -->
+        <div class="empty-state" id="emptyState">
+            <div class="icon">🔍</div>
+            <div style="font-size: 20px; font-weight: 600; margin-bottom: 8px;">开始识别</div>
+            <div style="font-size: 14px;">点击上方按钮拍照或选择图片</div>
+        </div>
+    </div>
+
+    <script>
+        // 配置
+        const SERVER_URL = 'http://localhost:5000';  // 修改为你的服务器地址
+
+        let currentMode = 'general';
+        let currentResolution = '1024';
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            // 模式选择
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentMode = btn.dataset.mode;
+                });
+            });
+
+            // 分辨率选择
+            document.querySelectorAll('.resolution-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.resolution-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentResolution = btn.dataset.resolution;
+                });
+            });
+
+            // 文件选择
+            document.getElementById('fileInput').addEventListener('change', handleFileSelect);
+            document.getElementById('cameraInput').addEventListener('change', handleFileSelect);
+        });
+
+        // 处理文件选择
+        async function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // 显示处理状态
+            showProcessing();
+
+            try {
+                const result = await recognizeImage(file);
+                showResult(result);
+            } catch (error) {
+                alert('识别失败: ' + error.message);
+                hideProcessing();
+            }
+
+            // 清空input
+            event.target.value = '';
+        }
+
+        // 调用 OCR API
+        async function recognizeImage(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('mode', currentMode);
+            formData.append('resolution', `${currentResolution}x${currentResolution}`);
+
+            const response = await fetch(`${SERVER_URL}/api/ocr/image`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error('服务器错误');
+            }
+
+            const data = await response.json();
+
+            if (!data.success) {
+                throw new Error(data.error || '识别失败');
+            }
+
+            return data.text;
+        }
+
+        // 显示处理状态
+        function showProcessing() {
+            document.getElementById('processing').classList.add('show');
+            document.getElementById('resultCard').classList.remove('show');
+            document.getElementById('emptyState').style.display = 'none';
+        }
+
+        // 隐藏处理状态
+        function hideProcessing() {
+            document.getElementById('processing').classList.remove('show');
+        }
+
+        // 显示结果
+        function showResult(text) {
+            hideProcessing();
+            document.getElementById('resultText').textContent = text;
+            document.getElementById('resultCard').classList.add('show');
+            document.getElementById('emptyState').style.display = 'none';
+        }
+
+        // 复制结果
+        function copyResult() {
+            const text = document.getElementById('resultText').textContent;
+
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('已复制到剪贴板');
+                });
+            } else {
+                // 兼容旧版浏览器
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('已复制到剪贴板');
+            }
+        }
+    </script>
+</body>
+</html>

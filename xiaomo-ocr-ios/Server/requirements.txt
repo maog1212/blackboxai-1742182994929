@@ -1,0 +1,25 @@
+# 小莫 OCR - iOS 服务器依赖
+
+# Web 框架
+flask>=3.0.0
+flask-cors>=4.0.0
+
+# 深度学习框架（可选，演示模式不需要）
+# 如需真实 OCR 功能，取消下面的注释
+# torch>=2.0.0
+# transformers>=4.46.0
+# Pillow>=10.0.0
+# einops>=0.7.0
+# addict>=2.4.0
+# easydict>=1.10
+
+# 基础依赖
+werkzeug>=3.0.0
+
+# 使用说明：
+# 1. 演示模式（最简单）:
+#    pip install flask flask-cors
+#
+# 2. 完整模式（真实识别）:
+#    pip install -r requirements.txt
+#    然后取消注释上面的深度学习依赖
