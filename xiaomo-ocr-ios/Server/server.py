@@ -4,9 +4,10 @@
 轻量级服务器，可在 Mac 或局域网中运行
 """
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory, render_template_string
 from flask_cors import CORS
 import os
+import socket
 from pathlib import Path
 import time
 from datetime import datetime
@@ -18,7 +19,7 @@ try:
     HAS_DEEPSEEK = True
 except ImportError:
     HAS_DEEPSEEK = False
-    print("⚠️  DeepSeek-OCR 未安装，将使用模拟模式")
+    print("⚠️  DeepSeek-OCR 未安装，将使用演示模式")
 
 app = Flask(__name__)
 CORS(app)  # 允许跨域请求
@@ -31,6 +32,276 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 ocr_model = None
 ocr_tokenizer = None
 model_loaded = False
+
+
+def get_local_ip():
+    """获取本机局域网 IP"""
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except:
+        return "127.0.0.1"
+
+
+# 欢迎页面 HTML
+WELCOME_PAGE = """
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小莫 OCR 服务器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .subtitle {
+            text-align: center;
+            opacity: 0.9;
+            margin-bottom: 30px;
+            font-size: 18px;
+        }
+        .status {
+            background: rgba(72, 187, 120, 0.2);
+            border: 2px solid rgba(72, 187, 120, 0.5);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .status-dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #48bb78;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .info-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .info-title {
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        .info-label {
+            opacity: 0.8;
+        }
+        .info-value {
+            font-weight: 600;
+            font-family: monospace;
+        }
+        .url-box {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: 600;
+            font-family: monospace;
+            margin: 20px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .url-box:hover {
+            background: rgba(0, 0, 0, 0.3);
+        }
+        .qr-code {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .qr-code img {
+            max-width: 200px;
+            height: auto;
+        }
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            line-height: 1.8;
+        }
+        .step {
+            margin-bottom: 15px;
+            padding-left: 30px;
+            position: relative;
+        }
+        .step-number {
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: white;
+            color: #667eea;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .button {
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: all 0.3s;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>🚀 小莫 OCR</h1>
+            <div class="subtitle">服务器运行中</div>
+
+            <div class="status">
+                <span class="status-dot"></span>
+                <span>服务正常运行</span>
+            </div>
+
+            <div class="info-section">
+                <div class="info-title">📱 iPhone 访问地址</div>
+                <div class="url-box" onclick="copyUrl()" title="点击复制">
+                    {{ webapp_url }}
+                </div>
+                <div style="text-align: center; font-size: 14px; opacity: 0.8;">
+                    点击可复制地址
+                </div>
+            </div>
+
+            <div class="info-section">
+                <div class="info-title">ℹ️ 服务器信息</div>
+                <div class="info-item">
+                    <span class="info-label">本机 IP</span>
+                    <span class="info-value">{{ local_ip }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">端口</span>
+                    <span class="info-value">5000</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">模型状态</span>
+                    <span class="info-value">{{ model_status }}</span>
+                </div>
+            </div>
+
+            <div class="instructions">
+                <div class="info-title">📖 使用步骤</div>
+                <div class="step">
+                    <div class="step-number">1</div>
+                    确保 iPhone 和 Mac 在同一 WiFi
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    在 iPhone Safari 中打开上面的地址
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    首次访问会自动检测并连接服务器
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    开始拍照识别文字！
+                </div>
+            </div>
+
+            <button class="button" onclick="testConnection()">
+                测试连接
+            </button>
+
+            <div style="margin-top: 20px; text-align: center; font-size: 14px; opacity: 0.7;">
+                API 文档: <a href="/api/status" style="color: white; text-decoration: underline;">/api/status</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function copyUrl() {
+            const url = '{{ webapp_url }}';
+            navigator.clipboard.writeText(url).then(() => {
+                alert('✅ 地址已复制到剪贴板！\\n\\n在 iPhone Safari 中粘贴访问');
+            });
+        }
+
+        function testConnection() {
+            fetch('/api/status')
+                .then(r => r.json())
+                .then(data => {
+                    alert('✅ 服务器连接正常！\\n\\n状态: ' + data.status);
+                })
+                .catch(e => {
+                    alert('❌ 连接失败: ' + e.message);
+                });
+        }
+    </script>
+</body>
+</html>
+"""
 
 
 def load_model():
@@ -86,19 +357,23 @@ def load_model():
 
 @app.route('/')
 def index():
-    """API 主页"""
-    return jsonify({
-        "service": "小莫 OCR - iOS 服务器",
-        "version": "1.0.0",
-        "model_loaded": model_loaded,
-        "platform": "iOS Compatible",
-        "endpoints": {
-            "GET /": "API 信息",
-            "GET /api/status": "服务器状态",
-            "POST /api/ocr/image": "图片识别",
-            "POST /api/init": "初始化模型"
-        }
-    })
+    """欢迎页面"""
+    local_ip = get_local_ip()
+    webapp_url = f"http://{local_ip}:5000/webapp"
+    model_status = "已加载" if model_loaded else ("演示模式" if not HAS_DEEPSEEK else "未加载")
+
+    return render_template_string(
+        WELCOME_PAGE,
+        local_ip=local_ip,
+        webapp_url=webapp_url,
+        model_status=model_status
+    )
+
+
+@app.route('/webapp')
+def webapp():
+    """Web 应用"""
+    return send_from_directory('../WebApp', 'index.html')
 
 
 @app.route('/api/status')
@@ -108,6 +383,7 @@ def status():
         "status": "ready" if model_loaded else "initializing",
         "model_loaded": model_loaded,
         "has_dependencies": HAS_DEEPSEEK,
+        "local_ip": get_local_ip(),
         "timestamp": datetime.now().isoformat()
     })
 
@@ -236,28 +512,39 @@ def ocr_demo():
 
 
 if __name__ == '__main__':
-    print("=" * 60)
-    print("小莫 OCR - iOS 配套服务器")
-    print("=" * 60)
+    local_ip = get_local_ip()
+
+    print("=" * 70)
+    print("")
+    print("   🚀 小莫 OCR - iOS 服务器")
+    print("")
+    print("=" * 70)
     print("")
 
     if HAS_DEEPSEEK:
         print("✅ DeepSeek-OCR 依赖已安装")
-        print("💡 启动后访问 /api/init 初始化模型")
+        print("💡 启动后访问 http://localhost:5000/api/init 初始化模型")
     else:
         print("⚠️  DeepSeek-OCR 未安装，使用演示模式")
         print("💡 可以使用 /api/ocr/demo 测试")
 
     print("")
-    print("服务器配置:")
-    print(f"  - 地址: http://0.0.0.0:5000")
-    print(f"  - iOS 访问: http://[你的Mac IP]:5000")
+    print("📱 iPhone 访问地址:")
+    print(f"   http://{local_ip}:5000/webapp")
     print("")
-    print("=" * 60)
+    print("🖥️  浏览器访问 (查看配置):")
+    print(f"   http://localhost:5000")
+    print("")
+    print("💡 提示:")
+    print("   - 确保 iPhone 和 Mac 在同一 WiFi")
+    print("   - 首次访问会自动检测连接")
+    print("   - 配置会保存在浏览器中")
+    print("")
+    print("=" * 70)
 
     # 启动服务器
     app.run(
         host='0.0.0.0',  # 允许局域网访问
         port=5000,
-        debug=True
+        debug=False  # 生产模式
     )
