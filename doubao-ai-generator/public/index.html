@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>豆包识别自动生成系统 - Doubao AI Generator</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- 头部 -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">
+                    <span class="logo-icon">🤖</span>
+                    豆包识别自动生成系统
+                </h1>
+                <nav class="nav">
+                    <button class="nav-btn active" data-view="recognition">AI识别</button>
+                    <button class="nav-btn" data-view="generation">内容生成</button>
+                    <button class="nav-btn" data-view="templates">模板管理</button>
+                    <button class="nav-btn" data-view="statistics">数据统计</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="main">
+        <div class="container">
+            <!-- AI识别视图 -->
+            <section id="recognition-view" class="view active">
+                <div class="view-header">
+                    <h2>AI智能识别</h2>
+                    <p class="subtitle">输入文本内容，让AI帮您识别关键信息</p>
+                </div>
+
+                <div class="content-card">
+                    <form id="recognition-form" class="ai-form">
+                        <div class="form-group">
+                            <label>任务名称</label>
+                            <input type="text" name="task_name" class="form-input" placeholder="例如：客户反馈分析" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>识别类型</label>
+                            <select name="task_type" class="form-input" required>
+                                <option value="text">文本识别</option>
+                                <option value="sentiment">情感分析</option>
+                                <option value="entity">实体提取</option>
+                                <option value="category">分类识别</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>输入内容</label>
+                            <textarea name="input_content" class="form-textarea" rows="8" placeholder="请输入需要识别的文本内容..." required></textarea>
+                            <div class="char-count">
+                                <span id="char-counter">0</span> 字
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-primary btn-large">
+                            <span class="btn-icon">🔍</span>
+                            开始AI识别
+                        </button>
+                    </form>
+                </div>
+
+                <div class="section-header">
+                    <h3>识别历史</h3>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" onclick="filterRecognition('all')">全部</button>
+                        <button class="filter-btn" onclick="filterRecognition('completed')">已完成</button>
+                        <button class="filter-btn" onclick="filterRecognition('failed')">失败</button>
+                    </div>
+                </div>
+
+                <div id="recognition-list" class="task-list"></div>
+
+                <div class="pagination">
+                    <button class="btn-page" id="recog-prev-page" onclick="previousRecognitionPage()">上一页</button>
+                    <span id="recog-page-info">第 1 页</span>
+                    <button class="btn-page" id="recog-next-page" onclick="nextRecognitionPage()">下一页</button>
+                </div>
+            </section>
+
+            <!-- 内容生成视图 -->
+            <section id="generation-view" class="view">
+                <div class="view-header">
+                    <h2>AI内容生成</h2>
+                    <p class="subtitle">选择模板，一键生成高质量内容</p>
+                </div>
+
+                <div class="content-card">
+                    <form id="generation-form" class="ai-form">
+                        <div class="form-group">
+                            <label>任务名称</label>
+                            <input type="text" name="task_name" class="form-input" placeholder="例如：产品介绍文章" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>选择模板</label>
+                            <select name="template_id" id="template-select" class="form-input" required>
+                                <option value="">请选择生成模板...</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>生成类型</label>
+                            <select name="generation_type" class="form-input" required>
+                                <option value="article">文章</option>
+                                <option value="summary">摘要</option>
+                                <option value="title">标题</option>
+                                <option value="description">描述</option>
+                                <option value="keywords">关键词</option>
+                                <option value="qa">问答</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>提示词 / 主题</label>
+                            <textarea name="prompt" class="form-textarea" rows="4" placeholder="请输入生成提示词或主题..." required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>上下文信息（可选）</label>
+                            <textarea name="context" class="form-textarea" rows="4" placeholder="提供额外的上下文信息，帮助生成更精准的内容..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-primary btn-large">
+                            <span class="btn-icon">✨</span>
+                            开始AI生成
+                        </button>
+                    </form>
+                </div>
+
+                <div class="section-header">
+                    <h3>生成历史</h3>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" onclick="filterGeneration('all')">全部</button>
+                        <button class="filter-btn" onclick="filterGeneration('completed')">已完成</button>
+                        <button class="filter-btn" onclick="filterGeneration('failed')">失败</button>
+                    </div>
+                </div>
+
+                <div id="generation-list" class="task-list"></div>
+
+                <div class="pagination">
+                    <button class="btn-page" id="gen-prev-page" onclick="previousGenerationPage()">上一页</button>
+                    <span id="gen-page-info">第 1 页</span>
+                    <button class="btn-page" id="gen-next-page" onclick="nextGenerationPage()">下一页</button>
+                </div>
+            </section>
+
+            <!-- 模板管理视图 -->
+            <section id="templates-view" class="view">
+                <div class="view-header">
+                    <h2>模板管理</h2>
+                    <p class="subtitle">管理和创建您的生成模板</p>
+                </div>
+
+                <div id="templates-grid" class="templates-grid"></div>
+            </section>
+
+            <!-- 数据统计视图 -->
+            <section id="statistics-view" class="view">
+                <div class="view-header">
+                    <h2>数据统计</h2>
+                    <p class="subtitle">查看系统使用情况和性能数据</p>
+                </div>
+
+                <div class="stats-overview">
+                    <div class="stat-card">
+                        <div class="stat-icon">🔍</div>
+                        <div class="stat-content">
+                            <div class="stat-label">识别任务</div>
+                            <div class="stat-value" id="stat-recog-total">0</div>
+                            <div class="stat-detail">成功率: <span id="stat-recog-rate">0</span>%</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">✨</div>
+                        <div class="stat-content">
+                            <div class="stat-label">生成任务</div>
+                            <div class="stat-value" id="stat-gen-total">0</div>
+                            <div class="stat-detail">成功率: <span id="stat-gen-rate">0</span>%</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">📝</div>
+                        <div class="stat-content">
+                            <div class="stat-label">总生成字数</div>
+                            <div class="stat-value" id="stat-words">0</div>
+                            <div class="stat-detail">平均质量得分: <span id="stat-quality">0</span></div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">⚡</div>
+                        <div class="stat-content">
+                            <div class="stat-label">平均处理时间</div>
+                            <div class="stat-value" id="stat-time">0</div>
+                            <div class="stat-detail">毫秒</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-charts">
+                    <div class="chart-card">
+                        <h3>识别任务类型分布</h3>
+                        <div id="chart-recognition" class="chart"></div>
+                    </div>
+
+                    <div class="chart-card">
+                        <h3>生成任务类型分布</h3>
+                        <div id="chart-generation" class="chart"></div>
+                    </div>
+
+                    <div class="chart-card">
+                        <h3>热门模板使用排行</h3>
+                        <div id="chart-templates" class="chart"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- 任务详情模态框 -->
+    <div id="detail-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- 加载提示 -->
+    <div id="loading" class="loading">
+        <div class="spinner"></div>
+        <p>AI处理中...</p>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
