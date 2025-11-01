@@ -9,6 +9,7 @@ const apiRoutes = require('./routes/api');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const HOST = process.env.REPL_SLUG ? '0.0.0.0' : 'localhost';
 
 // 中间件
 app.use(cors());
@@ -50,13 +51,23 @@ async function startServer() {
         await db.init();
         await db.initSchema();
 
-        app.listen(PORT, () => {
+        app.listen(PORT, HOST, () => {
             console.log('===========================================');
             console.log('  企业筛选资源体系服务已启动');
             console.log('  Enterprise Filter System Started');
             console.log('===========================================');
-            console.log(`  服务地址: http://localhost:${PORT}`);
-            console.log(`  API文档: http://localhost:${PORT}/api`);
+
+            // Replit环境显示特殊信息
+            if (process.env.REPL_SLUG) {
+                const replitUrl = `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`;
+                console.log('  🚀 Replit部署模式');
+                console.log(`  📱 手机访问地址: ${replitUrl}`);
+                console.log('  💡 可以直接在苹果手机浏览器中打开上面的地址！');
+            } else {
+                console.log(`  服务地址: http://localhost:${PORT}`);
+                console.log(`  API文档: http://localhost:${PORT}/api`);
+            }
+
             console.log('===========================================');
         });
     } catch (error) {

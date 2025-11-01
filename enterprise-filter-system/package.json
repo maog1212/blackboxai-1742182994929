@@ -4,10 +4,11 @@
   "description": "完整的企业筛选资源体系 - Complete Enterprise Filtering Resource System",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node scripts/auto-init.js && node server.js",
     "dev": "nodemon server.js",
     "init-db": "node scripts/init-database.js",
-    "seed": "node scripts/seed-data.js"
+    "seed": "node scripts/seed-data.js",
+    "replit": "node scripts/auto-init.js && node server.js"
   },
   "keywords": [
     "enterprise",

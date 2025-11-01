@@ -1,0 +1,44 @@
+# Replit 配置文件
+# 企业筛选资源体系 - Replit Configuration
+
+# 运行命令
+run = "npm start"
+
+# 入口文件
+entrypoint = "server.js"
+
+# 隐藏的文件和文件夹
+hidden = [".config", ".git", ".gitignore", "node_modules", ".env"]
+
+# 语言
+[languages.javascript]
+pattern = "**/*.js"
+
+[languages.javascript.languageServer]
+start = "typescript-language-server --stdio"
+
+# Node.js 环境配置
+[nix]
+channel = "stable-22_11"
+
+[env]
+PATH = "/home/runner/$REPL_SLUG/.config/npm/node_global/bin:/home/runner/$REPL_SLUG/node_modules/.bin"
+npm_config_prefix = "/home/runner/$REPL_SLUG/.config/npm/node_global"
+
+# 自动安装依赖
+[packager]
+language = "nodejs"
+
+[packager.features]
+packageSearch = true
+guessImports = true
+enabledForHosting = false
+
+# 部署配置
+[deployment]
+run = ["sh", "-c", "npm install && npm run seed && npm start"]
+deploymentTarget = "cloudrun"
+
+# 单元测试（如果需要）
+[unitTest]
+language = "nodejs"
