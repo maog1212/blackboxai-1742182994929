@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>臻品商城 - 高端品质生活</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo">
+                    <i class="fas fa-gem"></i>
+                    <span>臻品商城</span>
+                </div>
+                <div class="nav-links" id="navLinks">
+                    <a href="#home" class="nav-link active">首页</a>
+                    <a href="#products" class="nav-link">产品</a>
+                    <a href="#about" class="nav-link">关于我们</a>
+                    <a href="#contact" class="nav-link">联系我们</a>
+                </div>
+                <div class="nav-icons">
+                    <button class="icon-btn" id="searchBtn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <button class="icon-btn" id="cartBtn">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count" id="cartCount">0</span>
+                    </button>
+                    <button class="mobile-menu-btn" id="mobileMenuBtn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 移动端菜单 -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <h3>菜单</h3>
+            <button class="close-btn" id="closeMenuBtn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="mobile-nav-links">
+            <a href="#home" class="mobile-nav-link">首页</a>
+            <a href="#products" class="mobile-nav-link">产品</a>
+            <a href="#about" class="mobile-nav-link">关于我们</a>
+            <a href="#contact" class="mobile-nav-link">联系我们</a>
+        </div>
+    </div>
+
+    <!-- Hero 部分 -->
+    <section class="hero" id="home">
+        <div class="hero-slider">
+            <div class="hero-slide active">
+                <div class="hero-overlay"></div>
+                <div class="hero-content">
+                    <h1 class="hero-title" data-aos="fade-up">品质生活，从此开始</h1>
+                    <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="100">精选全球高端产品，为您打造尊贵体验</p>
+                    <button class="btn btn-primary" data-aos="fade-up" data-aos-delay="200">立即探索</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 特色服务 -->
+    <section class="features">
+        <div class="container">
+            <div class="features-grid">
+                <div class="feature-card" data-aos="fade-up">
+                    <div class="feature-icon">
+                        <i class="fas fa-shipping-fast"></i>
+                    </div>
+                    <h3>全球配送</h3>
+                    <p>专业物流团队，安全快速送达</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>品质保证</h3>
+                    <p>100%正品保障，假一赔十</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h3>24/7客服</h3>
+                    <p>全天候专业客服，随时为您服务</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="feature-icon">
+                        <i class="fas fa-undo"></i>
+                    </div>
+                    <h3>无忧退换</h3>
+                    <p>30天无理由退换，购物更安心</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 产品展示 -->
+    <section class="products" id="products">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <h2 class="section-title">精选产品</h2>
+                <p class="section-subtitle">为您精心挑选的高端产品</p>
+            </div>
+
+            <!-- 分类筛选 -->
+            <div class="category-filter" data-aos="fade-up">
+                <button class="filter-btn active" data-category="all">全部</button>
+                <button class="filter-btn" data-category="electronics">电子产品</button>
+                <button class="filter-btn" data-category="fashion">时尚服饰</button>
+                <button class="filter-btn" data-category="home">家居生活</button>
+                <button class="filter-btn" data-category="beauty">美妆护肤</button>
+            </div>
+
+            <!-- 产品网格 -->
+            <div class="products-grid" id="productsGrid">
+                <!-- 产品卡片将由JavaScript动态生成 -->
+            </div>
+        </div>
+    </section>
+
+    <!-- 关于我们 -->
+    <section class="about" id="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-image" data-aos="fade-right">
+                    <div class="about-image-wrapper">
+                        <div class="about-badge">
+                            <span>10+</span>
+                            <p>年经验</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-text" data-aos="fade-left">
+                    <h2 class="section-title">关于臻品商城</h2>
+                    <p class="about-description">
+                        臻品商城成立于2014年，专注于为全球用户提供高端品质产品。我们精选来自世界各地的优质商品，
+                        从电子产品到时尚服饰，从家居用品到美妆护肤，每一件商品都经过严格筛选。
+                    </p>
+                    <p class="about-description">
+                        我们始终坚持"品质第一，服务至上"的理念，致力于为每一位客户提供卓越的购物体验。
+                        我们的专业团队全天候为您服务，确保您的每一次购物都能满意而归。
+                    </p>
+                    <div class="about-stats">
+                        <div class="stat-item">
+                            <h3>500万+</h3>
+                            <p>满意客户</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3>10000+</h3>
+                            <p>精选产品</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3>50+</h3>
+                            <p>合作品牌</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 联系我们 -->
+    <section class="contact" id="contact">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <h2 class="section-title">联系我们</h2>
+                <p class="section-subtitle">我们随时为您提供帮助</p>
+            </div>
+            <div class="contact-content">
+                <div class="contact-info" data-aos="fade-right">
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div>
+                            <h4>地址</h4>
+                            <p>中国上海市浦东新区世纪大道888号</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div>
+                            <h4>电话</h4>
+                            <p>+86 400-888-8888</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div>
+                            <h4>邮箱</h4>
+                            <p>service@zhenpinmall.com</p>
+                        </div>
+                    </div>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-weixin"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-weibo"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-qq"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-douyin"></i></a>
+                    </div>
+                </div>
+                <div class="contact-form" data-aos="fade-left">
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <input type="text" placeholder="您的姓名" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" placeholder="您的邮箱" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="tel" placeholder="您的电话">
+                        </div>
+                        <div class="form-group">
+                            <textarea placeholder="留言内容" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">发送消息</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>臻品商城</h3>
+                    <p>品质生活，从此开始</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-weixin"></i></a>
+                        <a href="#"><i class="fab fa-weibo"></i></a>
+                        <a href="#"><i class="fab fa-qq"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>快捷链接</h4>
+                    <ul>
+                        <li><a href="#home">首页</a></li>
+                        <li><a href="#products">产品</a></li>
+                        <li><a href="#about">关于我们</a></li>
+                        <li><a href="#contact">联系我们</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>客户服务</h4>
+                    <ul>
+                        <li><a href="#">配送说明</a></li>
+                        <li><a href="#">退换货政策</a></li>
+                        <li><a href="#">隐私政策</a></li>
+                        <li><a href="#">常见问题</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>联系方式</h4>
+                    <ul>
+                        <li><i class="fas fa-phone"></i> +86 400-888-8888</li>
+                        <li><i class="fas fa-envelope"></i> service@zhenpinmall.com</li>
+                        <li><i class="fas fa-clock"></i> 9:00 - 21:00</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 臻品商城. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 购物车侧边栏 -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>购物车</h3>
+            <button class="close-btn" id="closeCartBtn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <div class="empty-cart">
+                <i class="fas fa-shopping-cart"></i>
+                <p>购物车是空的</p>
+            </div>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>总计：</span>
+                <span class="total-price" id="totalPrice">¥0.00</span>
+            </div>
+            <button class="btn btn-primary btn-block">去结算</button>
+        </div>
+    </div>
+
+    <!-- 遮罩层 -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="script.js"></script>
+</body>
+</html>
