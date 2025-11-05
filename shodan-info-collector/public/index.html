@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shodan 信息收集工具</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 Shodan 信息收集工具</h1>
+            <p class="subtitle">互联网设备信息搜索引擎</p>
+        </header>
+
+        <div class="search-section">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="输入搜索查询 (例如: apache, port:80, country:CN)">
+                <button id="searchBtn" onclick="performSearch()">搜索</button>
+            </div>
+
+            <div class="quick-filters">
+                <h3>快速查询示例:</h3>
+                <div class="filter-tags">
+                    <span class="tag" onclick="setSearch('apache')">Apache 服务器</span>
+                    <span class="tag" onclick="setSearch('port:22')">SSH (端口22)</span>
+                    <span class="tag" onclick="setSearch('port:3389')">RDP (端口3389)</span>
+                    <span class="tag" onclick="setSearch('nginx')">Nginx</span>
+                    <span class="tag" onclick="setSearch('country:CN')">中国设备</span>
+                    <span class="tag" onclick="setSearch('webcam')">网络摄像头</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="statsSection" class="stats-section" style="display:none;">
+            <h3>搜索统计</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-label">总结果数</span>
+                    <span class="stat-value" id="totalResults">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">当前页</span>
+                    <span class="stat-value" id="currentPage">1</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="loading" class="loading" style="display:none;">
+            <div class="spinner"></div>
+            <p>正在搜索...</p>
+        </div>
+
+        <div id="error" class="error" style="display:none;"></div>
+
+        <div id="results" class="results-section"></div>
+
+        <footer>
+            <p>⚠️ 警告: 本工具仅用于合法的安全研究和教育目的</p>
+            <p class="info">需要 Shodan API Key 才能使用</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
