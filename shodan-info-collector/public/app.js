@@ -195,3 +195,41 @@ document.getElementById('searchInput').addEventListener('keypress', function(eve
         performSearch();
     }
 });
+
+// 注册 Service Worker (PWA 支持)
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+                console.log('✅ Service Worker 注册成功:', registration.scope);
+            })
+            .catch(error => {
+                console.log('❌ Service Worker 注册失败:', error);
+            });
+    });
+}
+
+// iOS 添加到主屏幕提示
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    console.log('💡 可以安装 PWA 应用');
+});
+
+// 检测是否在 iOS Safari 中运行
+function isIOS() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+
+// 检测是否在独立模式（已添加到主屏幕）
+function isInStandaloneMode() {
+    return (window.matchMedia('(display-mode: standalone)').matches) ||
+           (window.navigator.standalone) ||
+           document.referrer.includes('android-app://');
+}
+
+// 如果是 iOS 且未添加到主屏幕，可以显示提示（可选）
+if (isIOS() && !isInStandaloneMode()) {
+    console.log('💡 提示: 在 Safari 中点击"分享"按钮，选择"添加到主屏幕"以获得更好的体验');
+}

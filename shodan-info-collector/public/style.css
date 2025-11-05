@@ -9,6 +9,13 @@ body {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
     padding: 20px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* iOS Safari 安全区域 */
+    padding-top: max(20px, env(safe-area-inset-top));
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+    padding-left: max(20px, env(safe-area-inset-left));
+    padding-right: max(20px, env(safe-area-inset-right));
 }
 
 .container {
@@ -53,6 +60,9 @@ header h1 {
     border: 2px solid #ddd;
     border-radius: 10px;
     transition: all 0.3s;
+    /* iOS 输入框优化 */
+    -webkit-appearance: none;
+    appearance: none;
 }
 
 #searchInput:focus {
@@ -71,6 +81,12 @@ header h1 {
     border-radius: 10px;
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
+    /* iOS 按钮优化 */
+    -webkit-appearance: none;
+    appearance: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    min-height: 44px; /* iOS 推荐最小触摸目标 */
 }
 
 #searchBtn:hover {
@@ -80,6 +96,7 @@ header h1 {
 
 #searchBtn:active {
     transform: translateY(0);
+    opacity: 0.8;
 }
 
 .quick-filters {
@@ -101,7 +118,7 @@ header h1 {
 }
 
 .tag {
-    padding: 8px 16px;
+    padding: 10px 18px;
     background: white;
     border: 2px solid #667eea;
     color: #667eea;
@@ -109,12 +126,26 @@ header h1 {
     cursor: pointer;
     transition: all 0.2s;
     font-size: 0.9em;
+    /* iOS 触摸优化 */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .tag:hover {
     background: #667eea;
     color: white;
     transform: translateY(-2px);
+}
+
+.tag:active {
+    opacity: 0.7;
+    transform: scale(0.98);
 }
 
 .stats-section {
@@ -288,6 +319,12 @@ footer .info {
     border-radius: 10px;
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
+    /* iOS 优化 */
+    -webkit-appearance: none;
+    appearance: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    min-height: 44px;
 }
 
 .ai-button:hover {
@@ -297,6 +334,7 @@ footer .info {
 
 .ai-button:active {
     transform: translateY(0);
+    opacity: 0.8;
 }
 
 /* AI 分析区域样式 */
@@ -344,21 +382,65 @@ footer .info {
     margin-bottom: 8px;
 }
 
-@media (max-width: 768px) {
+/* 平板和小屏幕笔记本 */
+@media (max-width: 1024px) {
     .container {
-        padding: 20px;
+        padding: 30px;
+    }
+}
+
+/* 手机屏幕 - 通用 */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+        padding-top: max(10px, env(safe-area-inset-top));
+        padding-bottom: max(10px, env(safe-area-inset-bottom));
+    }
+
+    .container {
+        padding: 15px;
+        border-radius: 15px;
     }
 
     header h1 {
-        font-size: 1.8em;
+        font-size: 1.6em;
+    }
+
+    .subtitle {
+        font-size: 0.95em;
     }
 
     .search-box {
         flex-direction: column;
+        gap: 12px;
+    }
+
+    #searchInput {
+        font-size: 16px; /* 防止 iOS 自动缩放 */
+        padding: 14px 18px;
     }
 
     #searchBtn, .ai-button {
         width: 100%;
+        padding: 14px 20px;
+        font-size: 16px;
+    }
+
+    .quick-filters {
+        padding: 15px;
+    }
+
+    .quick-filters h3 {
+        font-size: 1em;
+    }
+
+    .filter-tags {
+        gap: 8px;
+    }
+
+    .tag {
+        padding: 10px 16px;
+        font-size: 0.85em;
     }
 
     .result-header {
@@ -366,4 +448,79 @@ footer .info {
         align-items: flex-start;
         gap: 10px;
     }
+
+    .result-card {
+        padding: 15px;
+    }
+
+    .result-info {
+        grid-template-columns: 1fr;
+    }
+
+    .ai-analysis-section {
+        padding: 15px;
+        margin: 20px 0;
+    }
+
+    .ai-content {
+        padding: 15px;
+        font-size: 0.95em;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    footer {
+        font-size: 0.9em;
+    }
+}
+
+/* iPhone SE / 小屏手机 */
+@media (max-width: 375px) {
+    header h1 {
+        font-size: 1.4em;
+    }
+
+    .container {
+        padding: 12px;
+    }
+
+    .quick-filters h3 {
+        font-size: 0.95em;
+    }
+
+    .tag {
+        padding: 8px 14px;
+        font-size: 0.8em;
+    }
+}
+
+/* iPhone 横屏模式 */
+@media (max-height: 500px) and (orientation: landscape) {
+    body {
+        padding: 5px;
+    }
+
+    .container {
+        padding: 10px;
+    }
+
+    header {
+        margin-bottom: 20px;
+    }
+
+    header h1 {
+        font-size: 1.3em;
+    }
+
+    .subtitle {
+        font-size: 0.85em;
+    }
+}
+
+/* iOS 深色模式支持 */
+@media (prefers-color-scheme: dark) {
+    /* 可选：添加深色模式样式 */
 }
