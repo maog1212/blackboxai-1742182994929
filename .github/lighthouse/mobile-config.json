@@ -1,0 +1,38 @@
+{
+  "ci": {
+    "collect": {
+      "settings": {
+        "preset": "mobile",
+        "formFactor": "mobile",
+        "screenEmulation": {
+          "mobile": true,
+          "width": 430,
+          "height": 932,
+          "deviceScaleFactor": 3,
+          "disabled": false
+        },
+        "throttling": {
+          "rttMs": 150,
+          "throughputKbps": 1638.4,
+          "cpuSlowdownMultiplier": 4
+        }
+      }
+    },
+    "assert": {
+      "preset": "lighthouse:recommended",
+      "assertions": {
+        "categories:performance": ["warn", {"minScore": 0.8}],
+        "categories:accessibility": ["warn", {"minScore": 0.9}],
+        "categories:best-practices": ["warn", {"minScore": 0.9}],
+        "categories:seo": ["warn", {"minScore": 0.9}],
+        "categories:pwa": ["warn", {"minScore": 0.7}],
+        "viewport": "error",
+        "apple-touch-icon": "warn",
+        "service-worker": "warn",
+        "installable-manifest": "warn",
+        "themed-omnibox": "warn",
+        "content-width": "error"
+      }
+    }
+  }
+}

@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
 
     <!-- iOS Safari 优化 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -10,9 +10,14 @@
     <meta name="apple-mobile-web-app-title" content="Shodan搜索">
     <meta name="format-detection" content="telephone=no">
 
+    <!-- iPhone 15 Pro Max 及以上优化 -->
+    <meta name="supported-color-schemes" content="light dark">
+    <meta name="color-scheme" content="light dark">
+
     <!-- PWA 支持 -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#667eea">
+    <meta name="theme-color" content="#667eea" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#4a5fa8" media="(prefers-color-scheme: dark)">
 
     <!-- iOS 图标 -->
     <link rel="apple-touch-icon" href="icon-192.png">
