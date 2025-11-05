@@ -17,6 +17,7 @@
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="输入搜索查询 (例如: apache, port:80, country:CN)">
                 <button id="searchBtn" onclick="performSearch()">搜索</button>
+                <button id="aiSearchBtn" onclick="performSearch(true)" class="ai-button">🤖 AI 智能搜索</button>
             </div>
 
             <div class="quick-filters">
@@ -53,11 +54,16 @@
 
         <div id="error" class="error" style="display:none;"></div>
 
+        <div id="aiAnalysis" class="ai-analysis-section" style="display:none;">
+            <h3>🤖 DeepSeek AI 分析报告</h3>
+            <div id="aiContent" class="ai-content"></div>
+        </div>
+
         <div id="results" class="results-section"></div>
 
         <footer>
             <p>⚠️ 警告: 本工具仅用于合法的安全研究和教育目的</p>
-            <p class="info">需要 Shodan API Key 才能使用</p>
+            <p class="info">🤖 使用 DeepSeek AI 进行智能分析 | 🕷️ 数据来源: Shodan 平台</p>
         </footer>
     </div>
 

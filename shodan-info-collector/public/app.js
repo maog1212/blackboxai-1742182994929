@@ -7,7 +7,7 @@ function setSearch(query) {
 }
 
 // 执行搜索
-async function performSearch() {
+async function performSearch(useAI = false) {
     const query = document.getElementById('searchInput').value.trim();
 
     if (!query) {
@@ -16,10 +16,15 @@ async function performSearch() {
     }
 
     // 显示加载状态
-    document.getElementById('loading').style.display = 'block';
+    const loadingDiv = document.getElementById('loading');
+    const loadingText = loadingDiv.querySelector('p');
+    loadingText.textContent = useAI ? '正在搜索并使用 AI 分析...' : '正在搜索...';
+    loadingDiv.style.display = 'block';
+
     document.getElementById('error').style.display = 'none';
     document.getElementById('results').innerHTML = '';
     document.getElementById('statsSection').style.display = 'none';
+    document.getElementById('aiAnalysis').style.display = 'none';
 
     try {
         const response = await fetch('/api/search', {
@@ -27,7 +32,7 @@ async function performSearch() {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ query })
+            body: JSON.stringify({ query, useAI })
         });
 
         const data = await response.json();
@@ -40,10 +45,15 @@ async function performSearch() {
         displayResults(data);
         displayStats(data);
 
+        // 如果有 AI 分析结果，显示它
+        if (data.aiAnalysis) {
+            displayAIAnalysis(data.aiAnalysis);
+        }
+
     } catch (error) {
         showError(`错误: ${error.message}`);
     } finally {
-        document.getElementById('loading').style.display = 'none';
+        loadingDiv.style.display = 'none';
     }
 }
 
@@ -53,6 +63,38 @@ function displayStats(data) {
     document.getElementById('totalResults').textContent = data.total || 0;
     document.getElementById('currentPage').textContent = '1';
     statsSection.style.display = 'block';
+}
+
+// 显示 AI 分析结果
+function displayAIAnalysis(analysis) {
+    const aiSection = document.getElementById('aiAnalysis');
+    const aiContent = document.getElementById('aiContent');
+
+    // 将换行符转换为 HTML 段落
+    const formattedAnalysis = analysis
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0)
+        .map(line => {
+            // 检测标题行（数字开头）
+            if (/^\d+\./.test(line)) {
+                return `<h4>${escapeHtml(line)}</h4>`;
+            }
+            // 检测列表项（以 - 或 * 开头）
+            if (/^[-*]/.test(line)) {
+                return `<li>${escapeHtml(line.substring(1).trim())}</li>`;
+            }
+            return `<p>${escapeHtml(line)}</p>`;
+        })
+        .join('');
+
+    aiContent.innerHTML = formattedAnalysis;
+    aiSection.style.display = 'block';
+
+    // 平滑滚动到 AI 分析区域
+    setTimeout(() => {
+        aiSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 300);
 }
 
 // 显示搜索结果

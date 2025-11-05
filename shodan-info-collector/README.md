@@ -1,6 +1,6 @@
-# 🔍 Shodan 信息收集工具
+# 🔍 Shodan 信息收集工具 + 🤖 DeepSeek AI 分析
 
-基于 Shodan API 的简单信息收集网站，用于安全研究和教育目的。
+基于 Shodan 平台的智能信息收集网站，集成 DeepSeek AI 进行结果分析，用于安全研究和教育目的。
 
 ## ⚠️ 免责声明
 
@@ -13,16 +13,18 @@
 ## ✨ 功能特性
 
 - 🔎 **强大的搜索功能**: 支持 Shodan 全部搜索语法
+- 🤖 **AI 智能分析**: 使用 DeepSeek AI 自动分析搜索结果
 - 📊 **结果展示**: 清晰展示设备信息、端口、位置等
 - 🎯 **快速过滤**: 预设常用搜索查询
 - 💻 **现代化界面**: 简洁美观的用户界面
+- 🕷️ **无需 API Key**: 直接从 Shodan 平台爬取数据
 - 🌐 **RESTful API**: 完整的后端 API 接口
 
 ## 📋 前置要求
 
 - Node.js (v14 或更高版本)
 - npm 或 yarn
-- Shodan API Key ([获取地址](https://account.shodan.io/))
+- DeepSeek API Key ([获取地址](https://platform.deepseek.com/))
 
 ## 🚀 快速开始
 
@@ -33,7 +35,7 @@ cd shodan-info-collector
 npm install
 ```
 
-### 2. 配置 API Key
+### 2. 配置 DeepSeek API Key
 
 复制 `.env.example` 文件并重命名为 `.env`:
 
@@ -41,12 +43,14 @@ npm install
 cp .env.example .env
 ```
 
-编辑 `.env` 文件，添加你的 Shodan API Key:
+编辑 `.env` 文件（API Key 已预配置）:
 
 ```env
-SHODAN_API_KEY=your_actual_api_key_here
+DEEPSEEK_API_KEY=sk-d297057f68f248f5af9cba0e365cb27f
 PORT=3000
 ```
+
+**注意**: DeepSeek API Key 已经在代码中预配置，如果需要可以更换为自己的 Key。
 
 ### 3. 启动服务器
 
@@ -66,6 +70,11 @@ npm run dev
 
 ## 📖 使用说明
 
+### 搜索模式
+
+1. **普通搜索**: 点击"搜索"按钮，快速获取 Shodan 数据
+2. **AI 智能搜索**: 点击"🤖 AI 智能搜索"按钮，获取结果并使用 DeepSeek AI 进行深度分析
+
 ### 搜索语法示例
 
 | 查询 | 说明 |
@@ -80,27 +89,37 @@ npm run dev
 | `product:MySQL` | 搜索运行 MySQL 的设备 |
 | `apache country:US` | 组合查询：美国的 Apache 服务器 |
 
+### AI 分析功能
+
+DeepSeek AI 会自动为你提供:
+- 主要发现和安全风险评估
+- 按风险等级排序的设备列表
+- 安全加固建议
+- 统计摘要（国家分布、端口分布、服务类型等）
+
 ### API 端点
 
-#### 搜索设备
+#### 搜索设备（带可选 AI 分析）
 ```
 POST /api/search
 Content-Type: application/json
 
 {
   "query": "apache",
-  "page": 1
+  "page": 1,
+  "useAI": true
 }
 ```
 
-#### 获取主机信息
+#### AI 分析现有数据
 ```
-GET /api/host/:ip
-```
+POST /api/analyze
+Content-Type: application/json
 
-#### 获取 API 信息
-```
-GET /api/info
+{
+  "data": [...],
+  "query": "apache"
+}
 ```
 
 #### 健康检查
@@ -134,40 +153,47 @@ shodan-info-collector/
 ### 后端
 - Node.js
 - Express.js
-- Axios
-- Dotenv
+- Axios (HTTP 客户端)
+- Cheerio (Web 爬虫)
+- DeepSeek API (AI 分析)
+- Dotenv (环境变量)
 
 ## 📝 常见问题
 
-### Q: 如何获取 Shodan API Key?
+### Q: 为什么不直接使用 Shodan API？
 
-A: 访问 [Shodan 账户页面](https://account.shodan.io/)，注册账户后即可获得免费的 API Key。
+A: 本工具使用 Web 爬虫从 Shodan 平台获取数据，无需申请和配置 Shodan API Key，降低使用门槛。
 
-### Q: 免费 API Key 有什么限制?
+### Q: DeepSeek AI 分析需要付费吗？
 
-A: 免费账户有以下限制:
-- 每月 100 次查询积分
-- 最多返回前 100 个结果
-- 某些高级功能不可用
+A: DeepSeek API 有免费额度，足够日常使用。如需更多请求，可以在 [DeepSeek 平台](https://platform.deepseek.com/) 充值。
 
-### Q: 搜索时出现错误怎么办?
+### Q: 爬虫可能被限制吗？
+
+A: 是的，频繁请求可能被 Shodan 限制。建议：
+1. 合理控制搜索频率
+2. 避免大量并发请求
+3. 仅用于学习和研究目的
+
+### Q: AI 分析准确吗？
+
+A: DeepSeek AI 会基于搜索结果提供专业分析，但仅供参考。实际安全评估需要人工确认。
+
+### Q: 搜索时出现错误怎么办？
 
 A: 请检查:
-1. API Key 是否正确配置
-2. 是否还有剩余查询积分
+1. 网络连接是否正常
+2. DeepSeek API Key 是否有效
 3. 搜索语法是否正确
-4. 网络连接是否正常
-
-### Q: 如何升级到更多功能?
-
-A: 可以在 Shodan 网站购买付费计划，获得更多查询积分和高级功能。
+4. 是否被 Shodan 限制访问
 
 ## 🔒 安全建议
 
 1. **保护 API Key**: 不要将 `.env` 文件提交到 Git
 2. **限制访问**: 在生产环境中添加认证机制
-3. **合法使用**: 仅用于授权的安全测试
-4. **速率限制**: 避免频繁请求导致 API 被限制
+3. **合法使用**: 仅用于授权的安全测试和研究
+4. **速率限制**: 避免频繁爬取导致 IP 被封禁
+5. **数据安全**: 不要存储或分享敏感的搜索结果
 
 ## 📄 许可证
 

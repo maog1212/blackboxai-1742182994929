@@ -277,6 +277,73 @@ footer .info {
     color: #999;
 }
 
+/* AI 按钮样式 */
+.ai-button {
+    padding: 15px 30px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.ai-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(255, 107, 107, 0.4);
+}
+
+.ai-button:active {
+    transform: translateY(0);
+}
+
+/* AI 分析区域样式 */
+.ai-analysis-section {
+    margin: 30px 0;
+    padding: 25px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 15px;
+    border-left: 5px solid #ff6b6b;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.ai-analysis-section h3 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 1.3em;
+}
+
+.ai-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    line-height: 1.8;
+}
+
+.ai-content h4 {
+    color: #667eea;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 1.1em;
+}
+
+.ai-content h4:first-child {
+    margin-top: 0;
+}
+
+.ai-content p {
+    color: #333;
+    margin-bottom: 12px;
+}
+
+.ai-content li {
+    color: #555;
+    margin-left: 20px;
+    margin-bottom: 8px;
+}
+
 @media (max-width: 768px) {
     .container {
         padding: 20px;
@@ -290,7 +357,7 @@ footer .info {
         flex-direction: column;
     }
 
-    #searchBtn {
+    #searchBtn, .ai-button {
         width: 100%;
     }
 
