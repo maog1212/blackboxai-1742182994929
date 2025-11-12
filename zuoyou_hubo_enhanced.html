@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="左右互搏术">
+    <meta name="theme-color" content="#667eea">
+    <title>左右互搏术练习 - 增强版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue",
+                         "Microsoft YaHei", "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right)
+                     env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            padding: 30px 0 20px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: 5px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            letter-spacing: 2px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 11px;
+            margin-top: 10px;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 15px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            color: #333;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .character-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .character-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-align: center;
+            border: 3px solid transparent;
+        }
+
+        .character-card:active {
+            transform: scale(0.95);
+        }
+
+        .character-card.selected {
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .character-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .character-title {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .character-specialty {
+            font-size: 11px;
+            opacity: 0.8;
+            background: rgba(255,255,255,0.2);
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        .button {
+            width: 100%;
+            padding: 16px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .button:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .button.secondary {
+            background: #fff;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .button.camera {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .difficulty-option {
+            background: white;
+            border: 2px solid #ddd;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .difficulty-option:active {
+            transform: scale(0.98);
+        }
+
+        .difficulty-option.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .difficulty-name {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 16px;
+        }
+
+        .difficulty-rounds {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .battle-arena {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 20px 0;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .round-info {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #ffd700;
+        }
+
+        .hands-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 30px 0;
+        }
+
+        .hand {
+            text-align: center;
+            flex: 1;
+            padding: 15px;
+        }
+
+        .hand-icon {
+            font-size: 60px;
+            margin-bottom: 10px;
+            animation: float 2s ease-in-out infinite;
+        }
+
+        .left-hand .hand-icon {
+            animation-delay: 0s;
+        }
+
+        .right-hand .hand-icon {
+            animation-delay: 0.5s;
+        }
+
+        .hand-label {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .move-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #ffd700;
+            margin: 8px 0;
+        }
+
+        .move-type {
+            font-size: 12px;
+            opacity: 0.9;
+            background: rgba(255,255,255,0.2);
+            padding: 3px 8px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+
+        .vs-icon {
+            font-size: 30px;
+            color: #ff6b6b;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        .result-message {
+            text-align: center;
+            font-size: 16px;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .result-icon {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .stat-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .proficiency-display {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 15px;
+            margin: 15px 0;
+            color: white;
+        }
+
+        .proficiency-value {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .proficiency-label {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .evaluation {
+            text-align: center;
+            font-size: 18px;
+            padding: 20px;
+            background: rgba(255, 215, 0, 0.2);
+            border-radius: 12px;
+            margin: 15px 0;
+            border: 2px solid #ffd700;
+        }
+
+        /* 手势识别相关 */
+        .gesture-mode {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .gesture-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: #4caf50;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(30px);
+        }
+
+        .camera-preview {
+            width: 100%;
+            max-height: 300px;
+            border-radius: 12px;
+            margin: 15px 0;
+            display: none;
+            object-fit: cover;
+        }
+
+        .camera-preview.active {
+            display: block;
+        }
+
+        .gesture-hint {
+            font-size: 13px;
+            color: #333;
+            background: rgba(255,255,255,0.9);
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .counter-hint {
+            font-size: 13px;
+            color: #ffeb3b;
+            margin-top: 10px;
+            padding: 8px;
+            background: rgba(255,235,59,0.2);
+            border-radius: 8px;
+        }
+
+        .coordination-gain {
+            display: inline-block;
+            color: #4caf50;
+            font-weight: bold;
+            margin-left: 10px;
+            animation: bounceIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .back-button {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .info-text {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+            margin: 10px 0;
+        }
+
+        .feature-list {
+            text-align: left;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        .feature-item {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .feature-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Chrome优化 */
+        @supports (-webkit-appearance: none) {
+            .button, .character-card, .difficulty-option {
+                -webkit-appearance: none;
+            }
+        }
+
+        /* 响应式优化 */
+        @media (max-width: 350px) {
+            .title {
+                font-size: 24px;
+            }
+            .character-grid {
+                grid-template-columns: 1fr;
+            }
+            .hand-icon {
+                font-size: 45px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                max-width: 600px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title">左右互搏术</div>
+            <div class="subtitle">Left-Right Fighting Training</div>
+            <div class="badge">✨ Chrome & Safari 兼容版</div>
+        </div>
+
+        <!-- 主菜单 -->
+        <div id="menuScreen" class="screen active">
+            <div class="card">
+                <div class="card-title">选择角色</div>
+                <div class="character-grid">
+                    <div class="character-card" data-character="0">
+                        <div class="character-name">郭靖</div>
+                        <div class="character-title">北侠</div>
+                        <div class="character-specialty">降龙十八掌</div>
+                    </div>
+                    <div class="character-card" data-character="1">
+                        <div class="character-name">小龙女</div>
+                        <div class="character-title">古墓仙子</div>
+                        <div class="character-specialty">玉女心经</div>
+                    </div>
+                    <div class="character-card" data-character="2">
+                        <div class="character-name">杨过</div>
+                        <div class="character-title">神雕侠</div>
+                        <div class="character-specialty">黯然销魂掌</div>
+                    </div>
+                    <div class="character-card" data-character="3">
+                        <div class="character-name">周伯通</div>
+                        <div class="character-title">老顽童</div>
+                        <div class="character-specialty">左右互搏</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 手势识别模式 -->
+            <div class="card gesture-mode">
+                <div style="font-weight: bold; margin-bottom: 10px;">🎥 手势识别模式（实验性）</div>
+                <div class="gesture-toggle">
+                    <span>手势控制</span>
+                    <div class="toggle-switch" id="gestureToggle">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="gesture-hint">
+                    开启后可使用摄像头识别手势来选择招式
+                    <br>需要浏览器摄像头权限
+                </div>
+            </div>
+
+            <button id="startButton" class="button" disabled>开始练习</button>
+        </div>
+
+        <!-- 难度选择 -->
+        <div id="difficultyScreen" class="screen">
+            <div class="card">
+                <div class="card-title">选择难度</div>
+                <div class="difficulty-option" data-difficulty="0">
+                    <div>
+                        <div class="difficulty-name">🌱 初学</div>
+                        <div class="info-text">适合新手入门</div>
+                    </div>
+                    <div class="difficulty-rounds">10回合</div>
+                </div>
+                <div class="difficulty-option" data-difficulty="1">
+                    <div>
+                        <div class="difficulty-name">💫 熟练</div>
+                        <div class="info-text">掌握基础技巧</div>
+                    </div>
+                    <div class="difficulty-rounds">20回合</div>
+                </div>
+                <div class="difficulty-option" data-difficulty="2">
+                    <div>
+                        <div class="difficulty-name">⭐ 精通</div>
+                        <div class="info-text">追求更高境界</div>
+                    </div>
+                    <div class="difficulty-rounds">30回合</div>
+                </div>
+                <div class="difficulty-option" data-difficulty="3">
+                    <div>
+                        <div class="difficulty-name">🏆 宗师</div>
+                        <div class="info-text">挑战极限</div>
+                    </div>
+                    <div class="difficulty-rounds">50回合</div>
+                </div>
+            </div>
+
+            <button id="confirmDifficulty" class="button" disabled>确认开始</button>
+            <button id="backToMenu" class="button back-button">返回</button>
+        </div>
+
+        <!-- 战斗场景 -->
+        <div id="battleScreen" class="screen">
+            <!-- 摄像头预览（手势模式） -->
+            <video id="cameraPreview" class="camera-preview" autoplay playsinline></video>
+            <canvas id="gestureCanvas" style="display: none;"></canvas>
+
+            <div class="battle-arena">
+                <div class="round-info">
+                    <div>第 <span id="currentRound">1</span> / <span id="totalRounds">20</span> 回合</div>
+                    <div id="gestureStatus" style="font-size: 12px; margin-top: 5px; display: none;"></div>
+                </div>
+
+                <div class="hands-container">
+                    <div class="hand left-hand">
+                        <div class="hand-icon">👈</div>
+                        <div class="hand-label">左手</div>
+                        <div class="move-name" id="leftMove">准备中...</div>
+                        <div class="move-type" id="leftType"></div>
+                    </div>
+
+                    <div class="vs-icon">⚔️</div>
+
+                    <div class="hand right-hand">
+                        <div class="hand-icon">👉</div>
+                        <div class="hand-label">右手</div>
+                        <div class="move-name" id="rightMove">准备中...</div>
+                        <div class="move-type" id="rightType"></div>
+                    </div>
+                </div>
+
+                <div class="result-message" id="resultMessage">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+
+                <div id="counterHint" class="counter-hint" style="display: none;"></div>
+
+                <div style="color: white; text-align: center; margin-top: 15px;">
+                    <div>协调度: <span id="coordination">0</span> <span id="coordinationGain"></span></div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="roundProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="nextRound" class="button">下一回合</button>
+            <button id="stopGesture" class="button secondary" style="display: none;">关闭摄像头</button>
+        </div>
+
+        <!-- 结果统计 -->
+        <div id="resultScreen" class="screen">
+            <div class="card">
+                <div class="card-title">🎊 练习完成</div>
+
+                <div class="proficiency-display">
+                    <div class="proficiency-label">熟练度</div>
+                    <div class="proficiency-value" id="proficiencyValue">0%</div>
+                    <div class="proficiency-label">协调度: <span id="finalCoordination">0</span></div>
+                </div>
+
+                <div class="evaluation" id="evaluation">
+                    继续努力！
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="leftWins">0</div>
+                        <div class="stat-label">👈 左手获胜</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="rightWins">0</div>
+                        <div class="stat-label">👉 右手获胜</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="draws">0</div>
+                        <div class="stat-label">⚔️ 势均力敌</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalRoundsPlayed">0</div>
+                        <div class="stat-label">📊 总回合</div>
+                    </div>
+                </div>
+
+                <div class="feature-list" id="gestureStats" style="display: none;">
+                    <div style="font-weight: bold; margin-bottom: 10px; color: white;">手势识别统计</div>
+                    <div class="feature-item" style="color: white;">
+                        手势识别次数: <span id="gestureCount">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <button id="playAgain" class="button">再次练习</button>
+            <button id="backToMenuFromResult" class="button back-button">返回主菜单</button>
+        </div>
+    </div>
+
+    <script>
+        // 游戏数据
+        const characters = [
+            { name: '郭靖', title: '北侠', basePower: 90, specialty: '降龙十八掌' },
+            { name: '小龙女', title: '古墓仙子', basePower: 88, specialty: '玉女心经' },
+            { name: '杨过', title: '神雕侠', basePower: 92, specialty: '黯然销魂掌' },
+            { name: '周伯通', title: '老顽童', basePower: 95, specialty: '左右互搏' }
+        ];
+
+        const moves = [
+            { name: '亢龙有悔', type: '掌', power: 95, desc: '降龙十八掌第一式' },
+            { name: '飞龙在天', type: '掌', power: 90, desc: '降龙十八掌第二式' },
+            { name: '空明拳', type: '拳', power: 85, desc: '古墓派绝学' },
+            { name: '玉女素心剑', type: '剑', power: 88, desc: '古墓派剑法' },
+            { name: '一阳指', type: '指', power: 92, desc: '大理段氏绝学' },
+            { name: '六脉神剑', type: '指', power: 98, desc: '大理段氏最高武学' },
+            { name: '太极拳', type: '拳', power: 80, desc: '以柔克刚' },
+            { name: '黯然销魂掌', type: '掌', power: 96, desc: '杨过独创' },
+            { name: '弹指神通', type: '指', power: 87, desc: '东邪黄药师绝学' },
+            { name: '蛤蟆功', type: '内功', power: 89, desc: '西毒欧阳锋绝学' },
+            { name: '九阴真经', type: '内功', power: 94, desc: '武学至高秘籍' },
+            { name: '打狗棒法', type: '棍', power: 86, desc: '丐帮帮主独门武学' },
+            { name: '七伤拳', type: '拳', power: 91, desc: '伤人亦伤己' },
+            { name: '龙爪手', type: '掌', power: 84, desc: '刚猛凌厉' }
+        ];
+
+        const counterSystem = {
+            '拳': ['掌', '棍'],
+            '掌': ['指', '剑'],
+            '指': ['拳', '内功'],
+            '剑': ['拳', '棍'],
+            '内功': ['掌', '剑'],
+            '棍': ['指', '内功']
+        };
+
+        const difficulties = [
+            { name: '初学', rounds: 10 },
+            { name: '熟练', rounds: 20 },
+            { name: '精通', rounds: 30 },
+            { name: '宗师', rounds: 50 }
+        ];
+
+        // 游戏状态
+        let gameState = {
+            selectedCharacter: null,
+            selectedDifficulty: null,
+            currentRound: 0,
+            totalRounds: 0,
+            coordination: 0,
+            leftWins: 0,
+            rightWins: 0,
+            draws: 0,
+            gestureMode: false,
+            gestureCount: 0,
+            cameraStream: null
+        };
+
+        // 屏幕切换
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // 手势识别开关
+        const gestureToggle = document.getElementById('gestureToggle');
+        gestureToggle.addEventListener('click', function() {
+            gameState.gestureMode = !gameState.gestureMode;
+            this.classList.toggle('active');
+
+            if (gameState.gestureMode) {
+                console.log('手势识别模式已开启');
+            } else {
+                console.log('手势识别模式已关闭');
+                stopCamera();
+            }
+        });
+
+        // 摄像头控制
+        async function startCamera() {
+            if (!gameState.gestureMode) return;
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'user' }
+                });
+                const video = document.getElementById('cameraPreview');
+                video.srcObject = stream;
+                video.classList.add('active');
+                gameState.cameraStream = stream;
+
+                document.getElementById('gestureStatus').style.display = 'block';
+                document.getElementById('gestureStatus').textContent = '📷 摄像头已启动';
+                document.getElementById('stopGesture').style.display = 'block';
+
+                // 简单的手势检测（演示用）
+                detectGesture();
+            } catch (err) {
+                console.error('无法访问摄像头:', err);
+                alert('无法访问摄像头，请检查权限设置');
+                gameState.gestureMode = false;
+                gestureToggle.classList.remove('active');
+            }
+        }
+
+        function stopCamera() {
+            if (gameState.cameraStream) {
+                gameState.cameraStream.getTracks().forEach(track => track.stop());
+                gameState.cameraStream = null;
+                const video = document.getElementById('cameraPreview');
+                video.classList.remove('active');
+                video.srcObject = null;
+                document.getElementById('gestureStatus').style.display = 'none';
+                document.getElementById('stopGesture').style.display = 'none';
+            }
+        }
+
+        // 简单的手势检测（演示用 - 实际应用可集成TensorFlow.js或MediaPipe）
+        function detectGesture() {
+            // 这里只是演示框架，实际手势识别需要ML库
+            if (!gameState.gestureMode || !gameState.cameraStream) return;
+
+            // 模拟手势检测
+            setTimeout(() => {
+                if (gameState.gestureMode && gameState.cameraStream) {
+                    gameState.gestureCount++;
+                    detectGesture(); // 继续检测
+                }
+            }, 1000);
+        }
+
+        document.getElementById('stopGesture').addEventListener('click', stopCamera);
+
+        // 角色选择
+        document.querySelectorAll('.character-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.character-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                gameState.selectedCharacter = parseInt(this.dataset.character);
+                document.getElementById('startButton').disabled = false;
+            });
+        });
+
+        document.getElementById('startButton').addEventListener('click', () => {
+            showScreen('difficultyScreen');
+        });
+
+        // 难度选择
+        document.querySelectorAll('.difficulty-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.difficulty-option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+                gameState.selectedDifficulty = parseInt(this.dataset.difficulty);
+                document.getElementById('confirmDifficulty').disabled = false;
+            });
+        });
+
+        document.getElementById('confirmDifficulty').addEventListener('click', () => {
+            startGame();
+        });
+
+        document.getElementById('backToMenu').addEventListener('click', () => {
+            showScreen('menuScreen');
+        });
+
+        // 开始游戏
+        function startGame() {
+            gameState.totalRounds = difficulties[gameState.selectedDifficulty].rounds;
+            gameState.currentRound = 0;
+            gameState.coordination = 0;
+            gameState.leftWins = 0;
+            gameState.rightWins = 0;
+            gameState.draws = 0;
+            gameState.gestureCount = 0;
+
+            document.getElementById('totalRounds').textContent = gameState.totalRounds;
+            showScreen('battleScreen');
+
+            // 如果开启手势模式，启动摄像头
+            if (gameState.gestureMode) {
+                startCamera();
+            }
+
+            nextRound();
+        }
+
+        // 下一回合
+        function nextRound() {
+            if (gameState.currentRound >= gameState.totalRounds) {
+                stopCamera();
+                showResults();
+                return;
+            }
+
+            gameState.currentRound++;
+            document.getElementById('currentRound').textContent = gameState.currentRound;
+
+            // 随机选择招式（或通过手势识别）
+            let leftMove, rightMove;
+
+            if (gameState.gestureMode && Math.random() > 0.5) {
+                // 模拟基于手势的招式选择
+                leftMove = moves[Math.floor(Math.random() * moves.length)];
+                rightMove = moves[Math.floor(Math.random() * moves.length)];
+                if (document.getElementById('gestureStatus').style.display !== 'none') {
+                    document.getElementById('gestureStatus').textContent = '📷 检测到手势！';
+                }
+            } else {
+                // 随机选择
+                do {
+                    leftMove = moves[Math.floor(Math.random() * moves.length)];
+                    rightMove = moves[Math.floor(Math.random() * moves.length)];
+                } while (leftMove.name === rightMove.name);
+            }
+
+            // 显示招式
+            document.getElementById('leftMove').textContent = leftMove.name;
+            document.getElementById('leftType').textContent = leftMove.type;
+            document.getElementById('rightMove').textContent = rightMove.name;
+            document.getElementById('rightType').textContent = rightMove.type;
+
+            // 计算结果
+            const result = calculateBattle(leftMove, rightMove);
+
+            // 显示结果
+            setTimeout(() => {
+                displayResult(result, leftMove, rightMove);
+            }, 500);
+
+            // 更新进度
+            const progress = (gameState.currentRound / gameState.totalRounds) * 100;
+            document.getElementById('roundProgress').style.width = progress + '%';
+            document.getElementById('coordination').textContent = gameState.coordination;
+        }
+
+        // 计算战斗结果
+        function calculateBattle(leftMove, rightMove) {
+            const character = characters[gameState.selectedCharacter];
+
+            let leftPower = leftMove.power + Math.floor(Math.random() * 21) - 10;
+            let rightPower = rightMove.power + Math.floor(Math.random() * 21) - 10;
+
+            leftPower += character.basePower * 0.1;
+            rightPower += character.basePower * 0.1;
+
+            const leftCounters = counterSystem[leftMove.type]?.includes(rightMove.type);
+            const rightCounters = counterSystem[rightMove.type]?.includes(leftMove.type);
+
+            if (leftCounters) leftPower *= 1.3;
+            if (rightCounters) rightPower *= 1.3;
+
+            const powerDiff = Math.abs(leftPower - rightPower);
+
+            let result;
+            if (powerDiff < 15) {
+                result = 'draw';
+                gameState.draws++;
+            } else if (leftPower > rightPower) {
+                result = 'left';
+                gameState.leftWins++;
+            } else {
+                result = 'right';
+                gameState.rightWins++;
+            }
+
+            return { result, leftCounters, rightCounters };
+        }
+
+        // 显示结果
+        function displayResult(battleResult, leftMove, rightMove) {
+            const resultEl = document.getElementById('resultMessage');
+            const counterHintEl = document.getElementById('counterHint');
+
+            let icon, message, coordinationGain;
+
+            if (battleResult.result === 'draw') {
+                icon = '⚔️';
+                message = '势均力敌，难分高下！';
+                coordinationGain = 5;
+            } else if (battleResult.result === 'left') {
+                icon = '💪';
+                message = '左手占据上风！';
+                coordinationGain = 3;
+            } else {
+                icon = '💪';
+                message = '右手略胜一筹！';
+                coordinationGain = 3;
+            }
+
+            resultEl.innerHTML = `
+                <div class="result-icon">${icon}</div>
+                <div>${message}</div>
+            `;
+
+            // 显示相克信息
+            let counterText = '';
+            if (battleResult.leftCounters) {
+                counterText += `✨ 左手${leftMove.type}克制右手${rightMove.type}！`;
+            }
+            if (battleResult.rightCounters) {
+                if (counterText) counterText += '<br>';
+                counterText += `✨ 右手${rightMove.type}克制左手${leftMove.type}！`;
+            }
+
+            if (counterText) {
+                counterHintEl.innerHTML = counterText;
+                counterHintEl.style.display = 'block';
+            } else {
+                counterHintEl.style.display = 'none';
+            }
+
+            // 更新协调度
+            gameState.coordination += coordinationGain;
+            document.getElementById('coordination').textContent = gameState.coordination;
+            document.getElementById('coordinationGain').innerHTML =
+                `<span class="coordination-gain">+${coordinationGain}</span>`;
+
+            setTimeout(() => {
+                document.getElementById('coordinationGain').innerHTML = '';
+            }, 2000);
+        }
+
+        document.getElementById('nextRound').addEventListener('click', () => {
+            nextRound();
+        });
+
+        // 显示结果
+        function showResults() {
+            const proficiency = Math.min(100, gameState.coordination / 10);
+
+            document.getElementById('proficiencyValue').textContent = proficiency.toFixed(1) + '%';
+            document.getElementById('finalCoordination').textContent = gameState.coordination;
+            document.getElementById('leftWins').textContent = gameState.leftWins;
+            document.getElementById('rightWins').textContent = gameState.rightWins;
+            document.getElementById('draws').textContent = gameState.draws;
+            document.getElementById('totalRoundsPlayed').textContent = gameState.totalRounds;
+
+            // 手势统计
+            if (gameState.gestureMode && gameState.gestureCount > 0) {
+                document.getElementById('gestureStats').style.display = 'block';
+                document.getElementById('gestureCount').textContent = gameState.gestureCount;
+            }
+
+            let evaluation;
+            if (proficiency >= 90) {
+                evaluation = '🏆 宗师级！左右互搏已臻化境！';
+            } else if (proficiency >= 70) {
+                evaluation = '⭐ 精通级！左右手已能完美配合！';
+            } else if (proficiency >= 50) {
+                evaluation = '✨ 熟练级！左右手协调性大幅提升！';
+            } else if (proficiency >= 30) {
+                evaluation = '💫 入门级！已初步掌握左右互搏要领！';
+            } else {
+                evaluation = '🌱 初学者！继续努力练习吧！';
+            }
+
+            document.getElementById('evaluation').textContent = evaluation;
+
+            showScreen('resultScreen');
+        }
+
+        document.getElementById('playAgain').addEventListener('click', () => {
+            showScreen('difficultyScreen');
+        });
+
+        document.getElementById('backToMenuFromResult').addEventListener('click', () => {
+            // 重置选择
+            document.querySelectorAll('.character-card').forEach(c => c.classList.remove('selected'));
+            document.querySelectorAll('.difficulty-option').forEach(o => o.classList.remove('selected'));
+            document.getElementById('startButton').disabled = true;
+            document.getElementById('confirmDifficulty').disabled = true;
+            document.getElementById('gestureStats').style.display = 'none';
+            showScreen('menuScreen');
+        });
+
+        // 防止双击缩放
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+
+        // 添加触觉反馈（如果支持）
+        function vibrate() {
+            if (navigator.vibrate) {
+                navigator.vibrate(10);
+            }
+        }
+
+        document.querySelectorAll('.button, .character-card, .difficulty-option').forEach(el => {
+            el.addEventListener('click', vibrate);
+        });
+
+        // 页面卸载时清理资源
+        window.addEventListener('beforeunload', () => {
+            stopCamera();
+        });
+
+        // 检测浏览器
+        const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+        const isSafari = /Safari/.test(navigator.userAgent) && /Apple Computer/.test(navigator.vendor);
+
+        console.log('浏览器检测:', isChrome ? 'Chrome' : (isSafari ? 'Safari' : '其他'));
+        console.log('手势识别支持:', 'mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices);
+    </script>
+</body>
+</html>
