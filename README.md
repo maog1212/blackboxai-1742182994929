@@ -41,19 +41,27 @@ Built by https://www.blackbox.ai
 
 ## 🚀 快速开始
 
-### 📱 iPhone/iPad用户（零配置）
+### 📱 iPhone/iPad用户（零配置，直接玩）
 
-**复制网址，粘贴到Safari或Chrome，直接玩！**
+**只需打开网址，直接玩！**
 
+**增强版（推荐）：**
 ```
-https://你的用户名.github.io/仓库名/zuoyou_hubo_enhanced.html
+https://maog1212.github.io/blackboxai-1742182994929/zuoyou_hubo_enhanced.html
 ```
 
-就这么简单！
-- ✅ 无需安装任何东西
-- ✅ 无需注册登录
-- ✅ 无需配置设置
-- ✅ Safari和Chrome都能用
+**基础版：**
+```
+https://maog1212.github.io/blackboxai-1742182994929/zuoyou_hubo_mobile.html
+```
+
+✅ **特点：**
+- 点击网址立即开始游戏
+- 无需安装、注册、配置
+- Safari和Chrome都完美支持
+- 所有功能已内置
+
+💡 **提示：** 文件完全自包含，部署到任何服务器都能用！
 
 ---
 
@@ -66,6 +74,9 @@ python3 zuoyou_hubo.py
 访问相同网址即可
 
 ## 📖 详细文档
+
+### 🎮 直接可用
+- [直接可用说明](直接可用说明.md) ⭐⭐⭐ **文件完全自包含，上传即用**
 
 ### 🚀 开发者部署
 - [一键部署指南](一键部署指南.md) - 获取可分享的游戏网址
