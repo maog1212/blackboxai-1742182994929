@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="左右互搏术·AI版">
+    <meta name="theme-color" content="#667eea">
+    <title>左右互搏术练习 - AI智能版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue",
+                         "Microsoft YaHei", "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right)
+                     env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            padding: 30px 0 20px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: 5px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            letter-spacing: 2px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 11px;
+            margin-top: 10px;
+        }
+
+        .ai-badge {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-top: 10px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 15px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            color: #333;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        /* AI 大师对话区 */
+        .ai-master-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .ai-master-avatar {
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin: 0 auto 15px;
+            border: 3px solid rgba(255,255,255,0.5);
+        }
+
+        .ai-chat-area {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 15px;
+            margin: 15px 0;
+            min-height: 120px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .ai-message {
+            background: rgba(255,255,255,0.2);
+            padding: 10px 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            line-height: 1.6;
+            animation: slideIn 0.5s ease;
+        }
+
+        .ai-loading {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            padding: 15px;
+        }
+
+        .ai-loading-dot {
+            width: 8px;
+            height: 8px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .ai-loading-dot:nth-child(1) { animation-delay: -0.32s; }
+        .ai-loading-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        .ai-input-area {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .ai-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 25px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 14px;
+        }
+
+        .ai-input::placeholder {
+            color: rgba(255,255,255,0.6);
+        }
+
+        .ai-send-btn {
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.9);
+            color: #667eea;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .ai-send-btn:active {
+            transform: scale(0.95);
+        }
+
+        .character-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .character-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-align: center;
+            border: 3px solid transparent;
+        }
+
+        .character-card:active {
+            transform: scale(0.95);
+        }
+
+        .character-card.selected {
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .character-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .character-title {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .character-specialty {
+            font-size: 11px;
+            opacity: 0.8;
+            background: rgba(255,255,255,0.2);
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        .button {
+            width: 100%;
+            padding: 16px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .button:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .button.secondary {
+            background: #fff;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .difficulty-option {
+            background: white;
+            border: 2px solid #ddd;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .difficulty-option:active {
+            transform: scale(0.98);
+        }
+
+        .difficulty-option.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .difficulty-name {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 16px;
+        }
+
+        .difficulty-rounds {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .battle-arena {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 20px 0;
+            min-height: 300px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .round-info {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #ffd700;
+        }
+
+        .hands-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 30px 0;
+        }
+
+        .hand {
+            text-align: center;
+            flex: 1;
+            padding: 15px;
+        }
+
+        .hand-icon {
+            font-size: 60px;
+            margin-bottom: 10px;
+            animation: float 2s ease-in-out infinite;
+        }
+
+        .left-hand .hand-icon {
+            animation-delay: 0s;
+        }
+
+        .right-hand .hand-icon {
+            animation-delay: 0.5s;
+        }
+
+        .hand-label {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .move-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #ffd700;
+            margin: 8px 0;
+        }
+
+        .move-type {
+            font-size: 12px;
+            opacity: 0.9;
+            background: rgba(255,255,255,0.2);
+            padding: 3px 8px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+
+        .vs-icon {
+            font-size: 30px;
+            color: #ff6b6b;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        .result-message {
+            text-align: center;
+            font-size: 16px;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .result-icon {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .stat-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .proficiency-display {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 15px;
+            margin: 15px 0;
+            color: white;
+        }
+
+        .proficiency-value {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .proficiency-label {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .evaluation {
+            text-align: center;
+            font-size: 18px;
+            padding: 20px;
+            background: rgba(255, 215, 0, 0.2);
+            border-radius: 12px;
+            margin: 15px 0;
+            border: 2px solid #ffd700;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .back-button {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .info-text {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+            margin: 10px 0;
+        }
+
+        /* API 设置区 */
+        .api-config {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+        }
+
+        .api-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.9);
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        .api-status {
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .api-status.success {
+            background: rgba(76, 175, 80, 0.3);
+            color: #4caf50;
+        }
+
+        .api-status.error {
+            background: rgba(244, 67, 54, 0.3);
+            color: #f44336;
+        }
+
+        @media (max-width: 400px) {
+            .title {
+                font-size: 24px;
+            }
+            .hand-icon {
+                font-size: 45px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title">左右互搏术</div>
+            <div class="subtitle">Left-Right Fighting Training</div>
+            <div class="badge">✨ iPhone Safari/Chrome 完美兼容</div>
+            <div class="ai-badge">🤖 DeepSeek AI 智能版</div>
+        </div>
+
+        <!-- AI 大师指导（主屏幕） -->
+        <div id="aiMasterIntro" class="screen active">
+            <div class="ai-master-card">
+                <div class="ai-master-avatar">🧙</div>
+                <div class="card-title" style="color: white; border-color: rgba(255,255,255,0.3);">AI 武术大师</div>
+
+                <div class="ai-chat-area" id="introChat">
+                    <div class="ai-message">
+                        欢迎来到左右互搏术修炼之地。吾乃AI武术大师，将指导你修炼此绝世武功。
+                    </div>
+                    <div class="ai-message">
+                        你可以向我请教任何关于武功的问题，我将为你答疑解惑。
+                    </div>
+                </div>
+
+                <div class="api-config">
+                    <div style="color: rgba(255,255,255,0.9); font-size: 12px; margin-bottom: 8px;">
+                        DeepSeek API Key (可选)
+                    </div>
+                    <input type="password"
+                           class="api-input"
+                           id="apiKeyInput"
+                           placeholder="输入你的 DeepSeek API Key（留空使用模拟模式）">
+                    <div class="api-status" id="apiStatus" style="display: none;"></div>
+                </div>
+
+                <div class="ai-input-area">
+                    <input type="text"
+                           class="ai-input"
+                           id="introInput"
+                           placeholder="向大师请教武功心法...">
+                    <button class="ai-send-btn" id="introSend">发送</button>
+                </div>
+            </div>
+
+            <button class="button" id="startTraining">开始修炼</button>
+        </div>
+
+        <!-- 角色选择 -->
+        <div id="menuScreen" class="screen">
+            <div class="card">
+                <div class="card-title">选择角色</div>
+                <div class="character-grid">
+                    <div class="character-card" data-character="0">
+                        <div class="character-name">郭靖</div>
+                        <div class="character-title">北侠</div>
+                        <div class="character-specialty">降龙十八掌</div>
+                    </div>
+                    <div class="character-card" data-character="1">
+                        <div class="character-name">小龙女</div>
+                        <div class="character-title">古墓仙子</div>
+                        <div class="character-specialty">玉女心经</div>
+                    </div>
+                    <div class="character-card" data-character="2">
+                        <div class="character-name">杨过</div>
+                        <div class="character-title">神雕侠</div>
+                        <div class="character-specialty">黯然销魂掌</div>
+                    </div>
+                    <div class="character-card" data-character="3">
+                        <div class="character-name">周伯通</div>
+                        <div class="character-title">老顽童</div>
+                        <div class="character-specialty">左右互搏</div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="startButton" class="button" disabled>开始练习</button>
+        </div>
+
+        <!-- 难度选择 -->
+        <div id="difficultyScreen" class="screen">
+            <div class="card">
+                <div class="card-title">选择难度</div>
+                <div class="difficulty-option" data-difficulty="0">
+                    <div>
+                        <div class="difficulty-name">🌱 初学</div>
+                        <div class="info-text">适合新手入门</div>
+                    </div>
+                    <div class="difficulty-rounds">10回合</div>
+                </div>
+                <div class="difficulty-option" data-difficulty="1">
+                    <div>
+                        <div class="difficulty-name">💫 熟练</div>
+                        <div class="info-text">掌握基础技巧</div>
+                    </div>
+                    <div class="difficulty-rounds">20回合</div>
+                </div>
+                <div class="difficulty-option" data-difficulty="2">
+                    <div>
+                        <div class="difficulty-name">⭐ 精通</div>
+                        <div class="info-text">追求更高境界</div>
+                    </div>
+                    <div class="difficulty-rounds">30回合</div>
+                </div>
+                <div class="difficulty-option" data-difficulty="3">
+                    <div>
+                        <div class="difficulty-name">🏆 宗师</div>
+                        <div class="info-text">挑战极限</div>
+                    </div>
+                    <div class="difficulty-rounds">50回合</div>
+                </div>
+            </div>
+
+            <button id="confirmDifficulty" class="button" disabled>确认开始</button>
+            <button id="backToMenu" class="button back-button">返回</button>
+        </div>
+
+        <!-- 战斗场景 -->
+        <div id="battleScreen" class="screen">
+            <div class="battle-arena">
+                <div class="round-info">
+                    <div>第 <span id="currentRound">1</span> / <span id="totalRounds">20</span> 回合</div>
+                </div>
+
+                <div class="hands-container">
+                    <div class="hand left-hand">
+                        <div class="hand-icon">👈</div>
+                        <div class="hand-label">左手</div>
+                        <div class="move-name" id="leftMove">准备中...</div>
+                        <div class="move-type" id="leftType"></div>
+                    </div>
+
+                    <div class="vs-icon">⚔️</div>
+
+                    <div class="hand right-hand">
+                        <div class="hand-icon">👉</div>
+                        <div class="hand-label">右手</div>
+                        <div class="move-name" id="rightMove">准备中...</div>
+                        <div class="move-type" id="rightType"></div>
+                    </div>
+                </div>
+
+                <div class="result-message" id="resultMessage">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+
+                <div style="color: white; text-align: center; margin-top: 15px;">
+                    <div>协调度: <span id="coordination">0</span></div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="roundProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI 大师实时指导 -->
+            <div class="ai-master-card">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <div class="ai-master-avatar" style="width: 40px; height: 40px; font-size: 20px; margin: 0;">🧙</div>
+                    <div style="flex: 1; font-weight: bold;">大师指点</div>
+                </div>
+                <div class="ai-chat-area" id="battleChat" style="max-height: 150px;">
+                    <div class="ai-message">观察你的招式，我会给你实时指导...</div>
+                </div>
+            </div>
+
+            <button id="nextRound" class="button">下一回合</button>
+        </div>
+
+        <!-- 结果统计 -->
+        <div id="resultScreen" class="screen">
+            <div class="card">
+                <div class="card-title">🎊 练习完成</div>
+
+                <div class="proficiency-display">
+                    <div class="proficiency-label">熟练度</div>
+                    <div class="proficiency-value" id="proficiencyValue">0%</div>
+                    <div class="proficiency-label">协调度: <span id="finalCoordination">0</span></div>
+                </div>
+
+                <div class="evaluation" id="evaluation">
+                    继续努力！
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="leftWins">0</div>
+                        <div class="stat-label">👈 左手获胜</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="rightWins">0</div>
+                        <div class="stat-label">👉 右手获胜</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="draws">0</div>
+                        <div class="stat-label">⚔️ 势均力敌</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalRoundsPlayed">0</div>
+                        <div class="stat-label">📊 总回合</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI 大师总结 -->
+            <div class="ai-master-card">
+                <div class="ai-master-avatar">🧙</div>
+                <div class="card-title" style="color: white; border-color: rgba(255,255,255,0.3);">大师点评</div>
+                <div class="ai-chat-area" id="finalChat" style="max-height: 200px;">
+                    <div class="ai-loading">
+                        <div class="ai-loading-dot"></div>
+                        <div class="ai-loading-dot"></div>
+                        <div class="ai-loading-dot"></div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="playAgain" class="button">再次练习</button>
+            <button id="backToMenuFromResult" class="button back-button">返回主菜单</button>
+        </div>
+    </div>
+
+    <script>
+        // ==================== AI 系统 ====================
+
+        class AISystem {
+            constructor() {
+                this.apiKey = '';
+                this.useAPI = false;
+                this.baseURL = 'https://api.deepseek.com/v1/chat/completions';
+            }
+
+            setAPIKey(key) {
+                this.apiKey = key.trim();
+                this.useAPI = this.apiKey.length > 0;
+                return this.useAPI;
+            }
+
+            // 模拟 AI 响应（无需 API）
+            async simulateResponse(prompt, context = {}) {
+                await new Promise(resolve => setTimeout(resolve, 1000)); // 模拟延迟
+
+                const responses = {
+                    greeting: [
+                        "左右互搏术，乃周伯通所创绝世武功。心分二用，方能大成。",
+                        "此功需日夜苦练，方能达到心手合一之境界。",
+                        "武功之道，在于持之以恒。左右手如阴阳相济，刚柔并济。"
+                    ],
+                    guidance: [
+                        `观你此回合左手使${context.leftMove || '招式'}，右手使${context.rightMove || '招式'}，${this.getRandomTip()}`,
+                        `${this.getRandomTip()}`,
+                        `你的协调度已达${context.coordination || 0}，${this.getProgressTip(context.coordination)}`
+                    ],
+                    summary: [
+                        `经过${context.totalRounds || 0}回合修炼，你的熟练度达到${context.proficiency || 0}%。${this.getEvaluationTip(context.proficiency)}`,
+                        `左右手胜率分别为${context.leftWinRate || 0}%和${context.rightWinRate || 0}%，${this.getBalanceTip(context.leftWinRate, context.rightWinRate)}`
+                    ]
+                };
+
+                const type = context.type || 'greeting';
+                const options = responses[type] || responses.greeting;
+                return options[Math.floor(Math.random() * options.length)];
+            }
+
+            getRandomTip() {
+                const tips = [
+                    "招式精妙，继续努力！",
+                    "左右平衡，方为上乘！",
+                    "此招刚猛有余，柔和不足。",
+                    "招式已有所成，需再接再厉。",
+                    "以柔克刚，以静制动，方为武学真谛。"
+                ];
+                return tips[Math.floor(Math.random() * tips.length)];
+            }
+
+            getProgressTip(coordination) {
+                if (coordination < 30) return "初窥门径，继续努力！";
+                if (coordination < 60) return "渐入佳境，假以时日必成大器！";
+                if (coordination < 90) return "已达小成，距离大成不远矣！";
+                return "已臻化境，堪称一代宗师！";
+            }
+
+            getEvaluationTip(proficiency) {
+                if (proficiency < 30) return "尚需苦练，切勿心急。";
+                if (proficiency < 60) return "进步神速，假以时日必成大器。";
+                if (proficiency < 90) return "武功已达精通，再进一步即可登峰造极。";
+                return "恭喜你，已达宗师之境！";
+            }
+
+            getBalanceTip(leftRate, rightRate) {
+                const diff = Math.abs(leftRate - rightRate);
+                if (diff < 10) return "左右平衡，甚好甚好！";
+                if (diff < 20) return "略有偏差，需多加注意左右平衡。";
+                return "左右差距过大，需重点练习较弱的一方。";
+            }
+
+            // 调用 DeepSeek API（需要 API Key）
+            async callAPI(prompt, context = {}) {
+                if (!this.useAPI) {
+                    return await this.simulateResponse(prompt, context);
+                }
+
+                try {
+                    const messages = [
+                        {
+                            role: "system",
+                            content: "你是一位精通武侠的AI武术大师，擅长指导左右互搏术。请用简洁、武侠风格的语言回复，每次回复不超过50字。"
+                        },
+                        {
+                            role: "user",
+                            content: prompt + (context.data ? `\n\n当前情况：${JSON.stringify(context.data)}` : '')
+                        }
+                    ];
+
+                    const response = await fetch(this.baseURL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${this.apiKey}`
+                        },
+                        body: JSON.stringify({
+                            model: 'deepseek-chat',
+                            messages: messages,
+                            temperature: 0.7,
+                            max_tokens: 150
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('API调用失败');
+                    }
+
+                    const data = await response.json();
+                    return data.choices[0].message.content;
+                } catch (error) {
+                    console.error('AI调用失败，使用模拟模式:', error);
+                    return await this.simulateResponse(prompt, context);
+                }
+            }
+
+            // 便捷方法
+            async getGreeting() {
+                return await this.callAPI("向新学员介绍左右互搏术", { type: 'greeting' });
+            }
+
+            async getGuidance(leftMove, rightMove, result, coordination) {
+                return await this.callAPI(
+                    `学员刚完成一回合练习`,
+                    {
+                        type: 'guidance',
+                        leftMove,
+                        rightMove,
+                        coordination,
+                        data: { leftMove, rightMove, result, coordination }
+                    }
+                );
+            }
+
+            async getSummary(stats) {
+                return await this.callAPI(
+                    "对学员的修炼进行总结点评",
+                    {
+                        type: 'summary',
+                        proficiency: stats.proficiency,
+                        totalRounds: stats.totalRounds,
+                        leftWinRate: stats.leftWinRate,
+                        rightWinRate: stats.rightWinRate,
+                        data: stats
+                    }
+                );
+            }
+        }
+
+        // ==================== 游戏数据 ====================
+
+        const characters = [
+            { name: '郭靖', title: '北侠', basePower: 90, specialty: '降龙十八掌' },
+            { name: '小龙女', title: '古墓仙子', basePower: 88, specialty: '玉女心经' },
+            { name: '杨过', title: '神雕侠', basePower: 92, specialty: '黯然销魂掌' },
+            { name: '周伯通', title: '老顽童', basePower: 95, specialty: '左右互搏' }
+        ];
+
+        const moves = [
+            { name: '亢龙有悔', type: '掌', power: 95, desc: '降龙十八掌第一式' },
+            { name: '飞龙在天', type: '掌', power: 90, desc: '降龙十八掌第二式' },
+            { name: '空明拳', type: '拳', power: 85, desc: '古墓派绝学' },
+            { name: '玉女素心剑', type: '剑', power: 88, desc: '古墓派剑法' },
+            { name: '一阳指', type: '指', power: 92, desc: '大理段氏绝学' },
+            { name: '六脉神剑', type: '指', power: 98, desc: '大理段氏最高武学' },
+            { name: '太极拳', type: '拳', power: 80, desc: '以柔克刚' },
+            { name: '黯然销魂掌', type: '掌', power: 96, desc: '杨过独创' },
+            { name: '弹指神通', type: '指', power: 87, desc: '东邪黄药师绝学' },
+            { name: '蛤蟆功', type: '内功', power: 89, desc: '西毒欧阳锋绝学' },
+            { name: '九阴真经', type: '内功', power: 94, desc: '武学至高秘籍' },
+            { name: '打狗棒法', type: '棍', power: 86, desc: '丐帮帮主独门武学' },
+            { name: '七伤拳', type: '拳', power: 91, desc: '伤人亦伤己' },
+            { name: '龙爪手', type: '掌', power: 84, desc: '刚猛凌厉' }
+        ];
+
+        const counterSystem = {
+            '拳': ['掌', '棍'],
+            '掌': ['指', '剑'],
+            '指': ['拳', '内功'],
+            '剑': ['拳', '棍'],
+            '内功': ['掌', '剑'],
+            '棍': ['指', '内功']
+        };
+
+        const difficulties = [
+            { name: '初学', rounds: 10 },
+            { name: '熟练', rounds: 20 },
+            { name: '精通', rounds: 30 },
+            { name: '宗师', rounds: 50 }
+        ];
+
+        // ==================== 游戏状态 ====================
+
+        let gameState = {
+            selectedCharacter: null,
+            selectedDifficulty: null,
+            currentRound: 0,
+            totalRounds: 0,
+            coordination: 0,
+            leftWins: 0,
+            rightWins: 0,
+            draws: 0
+        };
+
+        let aiSystem = new AISystem();
+
+        // ==================== 初始化 ====================
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        async function addAIMessage(containerId, message) {
+            const container = document.getElementById(containerId);
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'ai-message';
+            messageDiv.textContent = message;
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function showAILoading(containerId) {
+            const container = document.getElementById(containerId);
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'ai-loading';
+            loadingDiv.innerHTML = `
+                <div class="ai-loading-dot"></div>
+                <div class="ai-loading-dot"></div>
+                <div class="ai-loading-dot"></div>
+            `;
+            container.appendChild(loadingDiv);
+            container.scrollTop = container.scrollHeight;
+            return loadingDiv;
+        }
+
+        function removeAILoading(loadingDiv) {
+            if (loadingDiv && loadingDiv.parentNode) {
+                loadingDiv.parentNode.removeChild(loadingDiv);
+            }
+        }
+
+        // ==================== AI 对话 ====================
+
+        document.getElementById('introSend').addEventListener('click', async () => {
+            const input = document.getElementById('introInput');
+            const question = input.value.trim();
+
+            if (!question) return;
+
+            await addAIMessage('introChat', `你：${question}`);
+            input.value = '';
+
+            const loading = await showAILoading('introChat');
+            const response = await aiSystem.callAPI(question);
+            removeAILoading(loading);
+            await addAIMessage('introChat', response);
+        });
+
+        // API Key 设置
+        document.getElementById('apiKeyInput').addEventListener('change', (e) => {
+            const key = e.target.value;
+            const isValid = aiSystem.setAPIKey(key);
+            const status = document.getElementById('apiStatus');
+
+            status.style.display = 'block';
+            if (isValid) {
+                status.className = 'api-status success';
+                status.textContent = '✓ API Key 已设置，将使用真实 AI';
+            } else {
+                status.className = 'api-status';
+                status.textContent = '使用模拟 AI 模式（无需 API Key）';
+            }
+        });
+
+        // 开始训练
+        document.getElementById('startTraining').addEventListener('click', () => {
+            showScreen('menuScreen');
+        });
+
+        // ==================== 游戏逻辑（保持原有功能）====================
+
+        // 角色选择
+        document.querySelectorAll('.character-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.character-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                gameState.selectedCharacter = parseInt(this.dataset.character);
+                document.getElementById('startButton').disabled = false;
+            });
+        });
+
+        document.getElementById('startButton').addEventListener('click', () => {
+            showScreen('difficultyScreen');
+        });
+
+        // 难度选择
+        document.querySelectorAll('.difficulty-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.difficulty-option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+                gameState.selectedDifficulty = parseInt(this.dataset.difficulty);
+                document.getElementById('confirmDifficulty').disabled = false;
+            });
+        });
+
+        document.getElementById('confirmDifficulty').addEventListener('click', () => {
+            startGame();
+        });
+
+        document.getElementById('backToMenu').addEventListener('click', () => {
+            showScreen('menuScreen');
+        });
+
+        // 开始游戏
+        function startGame() {
+            gameState.totalRounds = difficulties[gameState.selectedDifficulty].rounds;
+            gameState.currentRound = 0;
+            gameState.coordination = 0;
+            gameState.leftWins = 0;
+            gameState.rightWins = 0;
+            gameState.draws = 0;
+
+            document.getElementById('totalRounds').textContent = gameState.totalRounds;
+            document.getElementById('battleChat').innerHTML = '<div class="ai-message">观察你的招式，我会给你实时指导...</div>';
+            showScreen('battleScreen');
+            nextRound();
+        }
+
+        // 下一回合
+        async function nextRound() {
+            if (gameState.currentRound >= gameState.totalRounds) {
+                await showResults();
+                return;
+            }
+
+            gameState.currentRound++;
+            document.getElementById('currentRound').textContent = gameState.currentRound;
+
+            // 随机选择招式
+            let leftMove, rightMove;
+            do {
+                leftMove = moves[Math.floor(Math.random() * moves.length)];
+                rightMove = moves[Math.floor(Math.random() * moves.length)];
+            } while (leftMove.name === rightMove.name);
+
+            // 显示招式
+            document.getElementById('leftMove').textContent = leftMove.name;
+            document.getElementById('leftType').textContent = leftMove.type;
+            document.getElementById('rightMove').textContent = rightMove.name;
+            document.getElementById('rightType').textContent = rightMove.type;
+
+            // 计算结果
+            const result = calculateBattle(leftMove, rightMove);
+
+            // 显示结果
+            setTimeout(() => {
+                displayResult(result, leftMove, rightMove);
+            }, 500);
+
+            // 每3回合获取AI指导
+            if (gameState.currentRound % 3 === 0) {
+                const loading = await showAILoading('battleChat');
+                const guidance = await aiSystem.getGuidance(
+                    leftMove.name,
+                    rightMove.name,
+                    result.result,
+                    gameState.coordination
+                );
+                removeAILoading(loading);
+                await addAIMessage('battleChat', guidance);
+            }
+
+            // 更新进度
+            const progress = (gameState.currentRound / gameState.totalRounds) * 100;
+            document.getElementById('roundProgress').style.width = progress + '%';
+            document.getElementById('coordination').textContent = gameState.coordination;
+        }
+
+        // 计算战斗结果
+        function calculateBattle(leftMove, rightMove) {
+            const character = characters[gameState.selectedCharacter];
+
+            let leftPower = leftMove.power + Math.floor(Math.random() * 21) - 10;
+            let rightPower = rightMove.power + Math.floor(Math.random() * 21) - 10;
+
+            leftPower += character.basePower * 0.1;
+            rightPower += character.basePower * 0.1;
+
+            const leftCounters = counterSystem[leftMove.type]?.includes(rightMove.type);
+            const rightCounters = counterSystem[rightMove.type]?.includes(leftMove.type);
+
+            if (leftCounters) leftPower *= 1.3;
+            if (rightCounters) rightPower *= 1.3;
+
+            const powerDiff = Math.abs(leftPower - rightPower);
+
+            let result;
+            if (powerDiff < 15) {
+                result = 'draw';
+                gameState.draws++;
+            } else if (leftPower > rightPower) {
+                result = 'left';
+                gameState.leftWins++;
+            } else {
+                result = 'right';
+                gameState.rightWins++;
+            }
+
+            return { result, leftCounters, rightCounters };
+        }
+
+        // 显示结果
+        function displayResult(battleResult, leftMove, rightMove) {
+            const resultEl = document.getElementById('resultMessage');
+
+            let icon, message, coordinationGain;
+
+            if (battleResult.result === 'draw') {
+                icon = '⚔️';
+                message = '势均力敌，难分高下！';
+                coordinationGain = 5;
+            } else if (battleResult.result === 'left') {
+                icon = '💪';
+                message = '左手占据上风！';
+                coordinationGain = 3;
+            } else {
+                icon = '💪';
+                message = '右手略胜一筹！';
+                coordinationGain = 3;
+            }
+
+            resultEl.innerHTML = `
+                <div class="result-icon">${icon}</div>
+                <div>${message}</div>
+            `;
+
+            // 更新协调度
+            gameState.coordination += coordinationGain;
+            document.getElementById('coordination').textContent = gameState.coordination;
+        }
+
+        document.getElementById('nextRound').addEventListener('click', () => {
+            nextRound();
+        });
+
+        // 显示结果
+        async function showResults() {
+            const proficiency = Math.min(100, gameState.coordination / 10);
+
+            document.getElementById('proficiencyValue').textContent = proficiency.toFixed(1) + '%';
+            document.getElementById('finalCoordination').textContent = gameState.coordination;
+            document.getElementById('leftWins').textContent = gameState.leftWins;
+            document.getElementById('rightWins').textContent = gameState.rightWins;
+            document.getElementById('draws').textContent = gameState.draws;
+            document.getElementById('totalRoundsPlayed').textContent = gameState.totalRounds;
+
+            let evaluation;
+            if (proficiency >= 90) {
+                evaluation = '🏆 宗师级！左右互搏已臻化境！';
+            } else if (proficiency >= 70) {
+                evaluation = '⭐ 精通级！左右手已能完美配合！';
+            } else if (proficiency >= 50) {
+                evaluation = '✨ 熟练级！左右手协调性大幅提升！';
+            } else if (proficiency >= 30) {
+                evaluation = '💫 入门级！已初步掌握左右互搏要领！';
+            } else {
+                evaluation = '🌱 初学者！继续努力练习吧！';
+            }
+
+            document.getElementById('evaluation').textContent = evaluation;
+
+            showScreen('resultScreen');
+
+            // 获取AI总结
+            const loading = await showAILoading('finalChat');
+            const leftWinRate = ((gameState.leftWins / gameState.totalRounds) * 100).toFixed(1);
+            const rightWinRate = ((gameState.rightWins / gameState.totalRounds) * 100).toFixed(1);
+
+            const summary = await aiSystem.getSummary({
+                proficiency: proficiency.toFixed(1),
+                totalRounds: gameState.totalRounds,
+                leftWinRate,
+                rightWinRate
+            });
+
+            removeAILoading(loading);
+            document.getElementById('finalChat').innerHTML = '';
+            await addAIMessage('finalChat', summary);
+        }
+
+        document.getElementById('playAgain').addEventListener('click', () => {
+            showScreen('difficultyScreen');
+        });
+
+        document.getElementById('backToMenuFromResult').addEventListener('click', () => {
+            document.querySelectorAll('.character-card').forEach(c => c.classList.remove('selected'));
+            document.querySelectorAll('.difficulty-option').forEach(o => o.classList.remove('selected'));
+            document.getElementById('startButton').disabled = true;
+            document.getElementById('confirmDifficulty').disabled = true;
+            showScreen('menuScreen');
+        });
+
+        // 防止双击缩放
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+
+        // 添加触觉反馈
+        function vibrate() {
+            if (navigator.vibrate) {
+                navigator.vibrate(10);
+            }
+        }
+
+        document.querySelectorAll('.button, .character-card, .difficulty-option').forEach(el => {
+            el.addEventListener('click', vibrate);
+        });
+    </script>
+</body>
+</html>

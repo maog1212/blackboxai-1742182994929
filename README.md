@@ -6,7 +6,7 @@ Built by https://www.blackbox.ai
 
 ## 📦 项目内容
 
-本项目包含三个版本的左右互搏术练习程序：
+本项目包含四个版本的左右互搏术练习程序：
 
 ### 🖥️ Python桌面版
 - **文件**: `zuoyou_hubo.py`
@@ -20,15 +20,26 @@ Built by https://www.blackbox.ai
 - **使用**: 粘贴网址即可，无需安装
 - **特点**: 轻量级，快速加载，完美支持iOS
 
-### 🚀 移动Web版（增强版）⭐ 推荐iPhone用户
+### 🚀 移动Web版（增强版）
 - **文件**: `zuoyou_hubo_enhanced.html`
 - **适用**: 📱 iPhone (Safari ✅ / Chrome ✅) | Android Chrome
 - **使用**: 粘贴网址即玩，可选开启手势识别
 - **特点**:
   - ✅ iPhone Safari/Chrome 完美兼容
   - 🎥 可选手势识别功能
-  - 📷 所有功能已内置，无需安装任何东西
-  - 🤖 一键开启AI交互
+  - 📷 所有功能已内置
+
+### 🤖 AI智能版 ⭐⭐⭐ 最新推荐
+- **文件**: `zuoyou_hubo_ai.html`
+- **适用**: 📱 iPhone/Android，所有现代浏览器
+- **使用**: 粘贴网址即玩，AI大师全程指导
+- **特点**:
+  - ✅ 融合 **DeepSeek AI** 智能对话
+  - 🧙 AI 武术大师实时指导
+  - 💬 可随时向大师请教武功
+  - 📊 智能总结点评
+  - 🆓 支持免费模拟模式（无需API）
+  - 🔑 也支持 DeepSeek API（可选）
 
 ## 🎮 游戏特色
 
@@ -45,15 +56,26 @@ Built by https://www.blackbox.ai
 
 **只需打开网址，直接玩！**
 
-**增强版（推荐）：**
+**🤖 AI智能版（最新推荐）：**
+```
+https://maog1212.github.io/blackboxai-1742182994929/zuoyou_hubo_ai.html
+```
+- ✨ DeepSeek AI 大师全程指导
+- 🆓 免费模拟模式（无需 API）
+- 💬 可随时向大师请教
+
+**🚀 增强版：**
 ```
 https://maog1212.github.io/blackboxai-1742182994929/zuoyou_hubo_enhanced.html
 ```
+- ✨ 手势识别功能
+- 📷 完整游戏体验
 
-**基础版：**
+**📱 基础版：**
 ```
 https://maog1212.github.io/blackboxai-1742182994929/zuoyou_hubo_mobile.html
 ```
+- ✨ 轻量级，加载更快
 
 ✅ **特点：**
 - 点击网址立即开始游戏
