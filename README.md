@@ -41,21 +41,19 @@ Built by https://www.blackbox.ai
 
 ## 🚀 快速开始
 
-### 📱 iPhone/iPad用户（推荐）
+### 📱 iPhone/iPad用户（零配置）
 
-**超简单！只需2步：**
+**复制网址，粘贴到Safari或Chrome，直接玩！**
 
-1️⃣ **粘贴网址到Safari或Chrome**
 ```
 https://你的用户名.github.io/仓库名/zuoyou_hubo_enhanced.html
 ```
 
-2️⃣ **开始游戏！**
-- ✅ 所有功能已内置，无需安装
-- ✅ Safari和Chrome都完美支持
-- ✅ 可选：点击"手势识别"开关启用摄像头
-
-💡 **添加到主屏幕**：点击分享 📤 → "添加到主屏幕"，像App一样使用
+就这么简单！
+- ✅ 无需安装任何东西
+- ✅ 无需注册登录
+- ✅ 无需配置设置
+- ✅ Safari和Chrome都能用
 
 ---
 
@@ -64,21 +62,22 @@ https://你的用户名.github.io/仓库名/zuoyou_hubo_enhanced.html
 python3 zuoyou_hubo.py
 ```
 
-### 🌐 其他设备
-Android/其他设备也可以访问相同网址，Chrome浏览器体验最佳
+### 🌐 Android用户
+访问相同网址即可
 
 ## 📖 详细文档
 
-### 🚀 快速部署
-- [一键部署指南](一键部署指南.md) ⭐ **获取可粘贴的游戏网址**
+### 🚀 开发者部署
+- [一键部署指南](一键部署指南.md) - 获取可分享的游戏网址
 
-### 📱 iPhone/iPad用户
+### 📱 用户使用（零配置）
+- [用户零配置使用指南](用户零配置使用指南.md) ⭐ **粘贴网址就能玩**
 - [iPhone快速入门](QUICK_START_iPhone.md) - 3分钟上手
-- [iOS使用指南](iOS_使用说明.md) - 完整说明
 
 ### 🔧 技术文档
 - [版本对比](版本对比.md) - 选择最适合你的版本
 - [OCR与手势识别](OCR_手势识别说明.md) - AI功能说明
+- [iOS完整指南](iOS_使用说明.md) - 详细说明
 - [Python版说明](ZUOYOU_HUBO_README.md) - 桌面版文档
 
 ---
