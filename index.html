@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>左右互搏术模拟器 - maog1212</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'STKaiti', 'KaiTi', 'SimKai', serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e6d3a3;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: rgba(22, 33, 62, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            border: 1px solid #4a3c1a;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #d4af37, #f0e68c, #d4af37);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #d4af37;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+            position: relative;
+        }
+        
+        h1::after {
+            content: "";
+            display: block;
+            width: 80%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #d4af37, transparent);
+            margin: 10px auto;
+        }
+        
+        .character-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            background: rgba(42, 52, 82, 0.7);
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #5d4e2e;
+        }
+        
+        .character {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .character-name {
+            font-size: 1.2rem;
+            color: #f0e68c;
+            margin-bottom: 5px;
+        }
+        
+        .character-level {
+            font-size: 0.9rem;
+            color: #b8b8b8;
+        }
+        
+        .battle-area {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            position: relative;
+            min-height: 200px;
+        }
+        
+        .hand {
+            width: 45%;
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(33, 43, 73, 0.7);
+            border: 1px solid #5d4e2e;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .hand.active {
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.7);
+            border-color: #d4af37;
+        }
+        
+        .hand-title {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #f0e68c;
+        }
+        
+        .move {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #ffcc00;
+            margin: 10px 0;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .vs {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(22, 33, 62, 0.9);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #d4af37;
+            border: 2px solid #d4af37;
+            z-index: 10;
+        }
+        
+        .result-area {
+            background: rgba(42, 52, 82, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #5d4e2e;
+            margin-bottom: 20px;
+            min-height: 100px;
+            overflow-y: auto;
+        }
+        
+        .result-title {
+            color: #f0e68c;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        .result-log {
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .result-item {
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #5d4e2e;
+        }
+        
+        .progress-area {
+            margin-top: 20px;
+        }
+        
+        .progress-title {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #f0e68c;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: rgba(33, 43, 73, 0.7);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 5px;
+            border: 1px solid #5d4e2e;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #d4af37, #ffcc00);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-text {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #b8b8b8;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            background: linear-gradient(to bottom, #d4af37, #b8941f);
+            color: #1a1a2e;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-family: 'STKaiti', 'KaiTi', 'SimKai', serif;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #8a7f6d;
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 400px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .move {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>左右互搏术模拟器</h1>
+        
+        <div class="character-info">
+            <div class="character">
+                <div class="character-name">周伯通</div>
+                <div class="character-level">境界：心分二用</div>
+            </div>
+            <div class="character">
+                <div class="character-name">熟练度</div>
+                <div class="character-level">等级：融会贯通</div>
+            </div>
+        </div>
+        
+        <div class="battle-area">
+            <div class="hand left-hand">
+                <div class="hand-title">左手</div>
+                <div class="move" id="left-move">空明拳</div>
+            </div>
+            
+            <div class="vs">VS</div>
+            
+            <div class="hand right-hand">
+                <div class="hand-title">右手</div>
+                <div class="move" id="right-move">空明拳</div>
+            </div>
+        </div>
+        
+        <div class="result-area">
+            <div class="result-title">招式记录</div>
+            <div class="result-log" id="result-log">
+                <div class="result-item">左右互搏术开始演练...</div>
+            </div>
+        </div>
+        
+        <div class="progress-area">
+            <div class="progress-title">左右协调度</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div class="progress-text" id="progress-text">0%</div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn" id="toggle-btn">暂停演练</button>
+        </div>
+    </div>
+    
+    <div class="footer">
+        金庸武侠 · 左右互搏术 · 心分二用 · 自成一派<br>
+        maog1212.github.io
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 武功招式库
+            const moves = [
+                "空明拳", "黯然销魂掌", "降龙十八掌", "一阳指", "弹指神通",
+                "玉女素心剑", "金雁功", "先天功", "蛤蟆功", "打狗棒法",
+                "玄铁剑法", "落英神剑掌", "碧海潮生曲", "九阴白骨爪", "双手互搏"
+            ];
+            
+            // 结果描述库
+            const results = [
+                "相互抵消，平分秋色",
+                "以柔克刚，左手略占上风",
+                "刚猛无俦，右手稍胜一筹",
+                "招式精妙，相互纠缠",
+                "内力激荡，难分高下",
+                "虚实相生，互为补充",
+                "阴阳相济，威力倍增",
+                "刚柔并济，相辅相成"
+            ];
+            
+            const leftMoveElement = document.getElementById('left-move');
+            const rightMoveElement = document.getElementById('right-move');
+            const resultLogElement = document.getElementById('result-log');
+            const progressFillElement = document.getElementById('progress-fill');
+            const progressTextElement = document.getElementById('progress-text');
+            const toggleBtn = document.getElementById('toggle-btn');
+            const leftHand = document.querySelector('.left-hand');
+            const rightHand = document.querySelector('.right-hand');
+            
+            let isRunning = true;
+            let round = 0;
+            let coordination = 0;
+            let intervalId;
+            
+            // 开始演练
+            function startPractice() {
+                intervalId = setInterval(() => {
+                    if (!isRunning) return;
+                    
+                    round++;
+                    
+                    // 随机选择招式
+                    const leftMove = moves[Math.floor(Math.random() * moves.length)];
+                    const rightMove = moves[Math.floor(Math.random() * moves.length)];
+                    const result = results[Math.floor(Math.random() * results.length)];
+                    
+                    // 更新界面
+                    leftMoveElement.textContent = leftMove;
+                    rightMoveElement.textContent = rightMove;
+                    
+                    // 添加高亮效果
+                    leftHand.classList.add('active');
+                    rightHand.classList.add('active');
+                    
+                    setTimeout(() => {
+                        leftHand.classList.remove('active');
+                        rightHand.classList.remove('active');
+                    }, 500);
+                    
+                    // 添加结果记录
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'result-item fade-in';
+                    resultItem.textContent = `第${round}回合：左手「${leftMove}」 vs 右手「${rightMove}」 → ${result}`;
+                    
+                    resultLogElement.prepend(resultItem);
+                    
+                    // 限制记录条数
+                    if (resultLogElement.children.length > 5) {
+                        resultLogElement.removeChild(resultLogElement.lastChild);
+                    }
+                    
+                    // 更新协调度
+                    if (round % 3 === 0 && coordination < 100) {
+                        coordination += Math.floor(Math.random() * 5) + 1;
+                        if (coordination > 100) coordination = 100;
+                        
+                        progressFillElement.style.width = `${coordination}%`;
+                        progressTextElement.textContent = `${coordination}%`;
+                        
+                        if (coordination >= 100) {
+                            const maxItem = document.createElement('div');
+                            maxItem.className = 'result-item fade-in';
+                            maxItem.textContent = "恭喜！左右互搏术已臻化境，心分二用，自成一派！";
+                            maxItem.style.color = '#ffcc00';
+                            resultLogElement.prepend(maxItem);
+                        }
+                    }
+                    
+                    // 每10回合添加特殊信息
+                    if (round % 10 === 0) {
+                        const specialItem = document.createElement('div');
+                        specialItem.className = 'result-item fade-in';
+                        specialItem.textContent = `经过${round}回合练习，对左右互搏术的理解更加深刻了！`;
+                        specialItem.style.color = '#d4af37';
+                        resultLogElement.prepend(specialItem);
+                    }
+                }, 2000);
+            }
+            
+            // 切换演练状态
+            toggleBtn.addEventListener('click', function() {
+                isRunning = !isRunning;
+                toggleBtn.textContent = isRunning ? '暂停演练' : '继续演练';
+                
+                if (isRunning && !intervalId) {
+                    startPractice();
+                }
+            });
+            
+            // 初始启动
+            startPractice();
+        });
+    </script>
+</body>
+</html>
