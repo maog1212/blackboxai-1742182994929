@@ -16,21 +16,19 @@ Built by https://www.blackbox.ai
 
 ### 📱 移动Web版（基础版）
 - **文件**: `zuoyou_hubo_mobile.html`
-- **说明**: `iOS_使用说明.md`
-- **适用**: iPhone/iPad/Android手机
-- **运行**: 在Safari或Chrome浏览器中打开
-- **特点**: 轻量级，快速加载
+- **适用**: 📱 iPhone/iPad (Safari/Chrome) | Android
+- **使用**: 粘贴网址即可，无需安装
+- **特点**: 轻量级，快速加载，完美支持iOS
 
-### 🚀 移动Web版（增强版）⭐ 推荐
+### 🚀 移动Web版（增强版）⭐ 推荐iPhone用户
 - **文件**: `zuoyou_hubo_enhanced.html`
-- **说明**: `OCR_手势识别说明.md`
-- **适用**: Chrome/Safari浏览器，支持摄像头的设备
-- **运行**: 在浏览器中打开，授予摄像头权限
+- **适用**: 📱 iPhone (Safari ✅ / Chrome ✅) | Android Chrome
+- **使用**: 粘贴网址即玩，可选开启手势识别
 - **特点**:
-  - ✅ Chrome完美优化
-  - 🎥 实验性手势识别
-  - 📷 OCR集成准备
-  - 🤖 支持MediaPipe/TensorFlow.js
+  - ✅ iPhone Safari/Chrome 完美兼容
+  - 🎥 可选手势识别功能
+  - 📷 所有功能已内置，无需安装任何东西
+  - 🤖 一键开启AI交互
 
 ## 🎮 游戏特色
 
@@ -43,28 +41,45 @@ Built by https://www.blackbox.ai
 
 ## 🚀 快速开始
 
-### 桌面版
+### 📱 iPhone/iPad用户（推荐）
+
+**超简单！只需2步：**
+
+1️⃣ **粘贴网址到Safari或Chrome**
+```
+https://你的用户名.github.io/仓库名/zuoyou_hubo_enhanced.html
+```
+
+2️⃣ **开始游戏！**
+- ✅ 所有功能已内置，无需安装
+- ✅ Safari和Chrome都完美支持
+- ✅ 可选：点击"手势识别"开关启用摄像头
+
+💡 **添加到主屏幕**：点击分享 📤 → "添加到主屏幕"，像App一样使用
+
+---
+
+### 🖥️ 桌面版
 ```bash
 python3 zuoyou_hubo.py
 ```
 
-### 移动版（基础版）
-1. 在iPhone/Android上打开 `zuoyou_hubo_mobile.html`
-2. 或访问GitHub Pages链接（如已部署）
-3. 添加到主屏幕以获得最佳体验
-
-### 移动版（增强版）⭐
-1. 在Chrome或Safari中打开 `zuoyou_hubo_enhanced.html`
-2. 点击"手势识别模式"开关启用摄像头
-3. 授予摄像头权限
-4. 用手势控制招式选择
+### 🌐 其他设备
+Android/其他设备也可以访问相同网址，Chrome浏览器体验最佳
 
 ## 📖 详细文档
 
-- [Python版详细说明](ZUOYOU_HUBO_README.md)
-- [iOS使用指南](iOS_使用说明.md)
-- [iPhone快速入门](QUICK_START_iPhone.md)
-- [OCR与手势识别说明](OCR_手势识别说明.md) ⭐ 新增
+### 🚀 快速部署
+- [一键部署指南](一键部署指南.md) ⭐ **获取可粘贴的游戏网址**
+
+### 📱 iPhone/iPad用户
+- [iPhone快速入门](QUICK_START_iPhone.md) - 3分钟上手
+- [iOS使用指南](iOS_使用说明.md) - 完整说明
+
+### 🔧 技术文档
+- [版本对比](版本对比.md) - 选择最适合你的版本
+- [OCR与手势识别](OCR_手势识别说明.md) - AI功能说明
+- [Python版说明](ZUOYOU_HUBO_README.md) - 桌面版文档
 
 ---
 
