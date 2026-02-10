@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenClaw 全能精华版 — 一键部署</title>
+<style>
+/* ── 全局 ─────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0e1a; --card:#111827; --border:#1e293b;
+  --text:#e2e8f0; --muted:#64748b; --accent:#f97316;
+  --accent2:#fb923c; --green:#22c55e; --red:#ef4444;
+  --blue:#3b82f6; --purple:#a855f7;
+  --glow:0 0 40px rgba(249,115,22,.15);
+}
+html{font-size:16px}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;
+  background:var(--bg);color:var(--text);min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;
+  overflow-x:hidden;
+}
+a{color:var(--accent);text-decoration:none}
+
+/* ── 粒子背景 ────────────────────────────────────────── */
+#particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+
+/* ── 主容器 ──────────────────────────────────────────── */
+.container{
+  position:relative;z-index:1;width:100%;max-width:800px;
+  padding:2rem 1.5rem;
+}
+
+/* ── 头部 ────────────────────────────────────────────── */
+.header{text-align:center;margin-bottom:2.5rem}
+.logo{font-size:3.5rem;margin-bottom:.5rem;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.title{
+  font-size:1.8rem;font-weight:800;
+  background:linear-gradient(135deg,var(--accent),var(--accent2),var(--purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.subtitle{color:var(--muted);margin-top:.4rem;font-size:.9rem}
+.badges{display:flex;gap:.5rem;justify-content:center;margin-top:1rem;flex-wrap:wrap}
+.badge{
+  font-size:.7rem;padding:.25rem .6rem;border-radius:9999px;
+  background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.3);
+  color:var(--accent2);
+}
+
+/* ── 卡片 ────────────────────────────────────────────── */
+.card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:1rem;padding:1.5rem;margin-bottom:1.5rem;
+  box-shadow:var(--glow);transition:border-color .3s;
+}
+.card:hover{border-color:rgba(249,115,22,.3)}
+.card-title{font-size:1.05rem;font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.card-title .icon{font-size:1.2rem}
+
+/* ── 表单控件 ────────────────────────────────────────── */
+.form-group{margin-bottom:1rem}
+.form-label{
+  display:block;font-size:.8rem;color:var(--muted);
+  margin-bottom:.35rem;font-weight:600;
+}
+.form-input,.form-select{
+  width:100%;padding:.65rem .9rem;
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+  border-radius:.5rem;color:var(--text);font-size:.9rem;
+  transition:border-color .2s;outline:none;
+}
+.form-input:focus,.form-select:focus{border-color:var(--accent)}
+.form-select{cursor:pointer;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right .7rem center;
+}
+.form-select option{background:var(--card);color:var(--text)}
+.form-hint{font-size:.72rem;color:var(--muted);margin-top:.25rem}
+
+/* 模式选择器 */
+.mode-selector{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1rem}
+.mode-btn{
+  padding:.7rem .5rem;background:rgba(255,255,255,.03);
+  border:1px solid var(--border);border-radius:.6rem;
+  text-align:center;cursor:pointer;transition:all .2s;
+  font-size:.82rem;color:var(--muted);
+}
+.mode-btn:hover{border-color:var(--accent);color:var(--text)}
+.mode-btn.active{
+  border-color:var(--accent);background:rgba(249,115,22,.08);
+  color:var(--accent);font-weight:600;
+}
+.mode-btn .mode-icon{font-size:1.4rem;display:block;margin-bottom:.3rem}
+.mode-btn .mode-label{font-size:.72rem;color:var(--muted);margin-top:.15rem}
+
+/* ── 一键部署按钮 ──────────────────────────────────── */
+.deploy-section{text-align:center;margin:1.5rem 0}
+.deploy-btn{
+  position:relative;display:inline-flex;align-items:center;justify-content:center;
+  gap:.6rem;padding:1rem 3rem;font-size:1.2rem;font-weight:800;
+  color:#fff;background:linear-gradient(135deg,var(--accent),#ea580c);
+  border:none;border-radius:9999px;cursor:pointer;
+  box-shadow:0 4px 30px rgba(249,115,22,.4);
+  transition:all .3s;letter-spacing:.05em;
+  overflow:hidden;min-width:280px;
+}
+.deploy-btn::before{
+  content:'';position:absolute;top:-50%;left:-50%;
+  width:200%;height:200%;
+  background:linear-gradient(45deg,transparent 40%,rgba(255,255,255,.15) 50%,transparent 60%);
+  animation:shimmer 3s infinite;
+}
+@keyframes shimmer{0%{transform:translateX(-100%) rotate(45deg)}100%{transform:translateX(100%) rotate(45deg)}}
+.deploy-btn:hover{transform:translateY(-2px);box-shadow:0 6px 40px rgba(249,115,22,.5)}
+.deploy-btn:active{transform:translateY(0)}
+.deploy-btn:disabled{
+  opacity:.6;cursor:not-allowed;
+  background:linear-gradient(135deg,#475569,#334155);
+  box-shadow:none;
+}
+.deploy-btn:disabled::before{display:none}
+.deploy-btn .spinner{
+  width:20px;height:20px;border:2.5px solid rgba(255,255,255,.3);
+  border-top-color:#fff;border-radius:50%;
+  animation:spin .8s linear infinite;display:none;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.deploy-btn.running .spinner{display:block}
+.deploy-btn.running .btn-text{display:none}
+
+/* ── 进度区 ──────────────────────────────────────────── */
+.progress-section{display:none}
+.progress-section.visible{display:block}
+
+.progress-bar-wrap{
+  height:8px;background:rgba(255,255,255,.06);
+  border-radius:9999px;overflow:hidden;margin:1rem 0;
+}
+.progress-bar{
+  height:100%;width:0%;border-radius:9999px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  transition:width .5s ease;position:relative;
+}
+.progress-bar::after{
+  content:'';position:absolute;right:0;top:0;bottom:0;width:30px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.3));
+  animation:pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+
+.progress-info{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:.85rem;margin-bottom:.5rem;
+}
+.progress-pct{
+  font-weight:700;font-size:1.3rem;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.progress-msg{color:var(--muted);font-size:.8rem}
+
+/* ── 终端日志 ────────────────────────────────────────── */
+.terminal{
+  background:#0d1117;border:1px solid var(--border);
+  border-radius:.75rem;overflow:hidden;margin-top:1rem;
+}
+.terminal-header{
+  display:flex;align-items:center;gap:.4rem;
+  padding:.5rem .8rem;background:rgba(255,255,255,.03);
+  border-bottom:1px solid var(--border);
+}
+.terminal-dot{width:10px;height:10px;border-radius:50%}
+.terminal-dot.r{background:#ff5f56}.terminal-dot.y{background:#ffbd2e}.terminal-dot.g{background:#27c93f}
+.terminal-title{flex:1;text-align:center;font-size:.72rem;color:var(--muted)}
+.terminal-body{
+  padding:.8rem;font-family:"SF Mono","Fira Code",monospace;
+  font-size:.75rem;line-height:1.6;color:#8b949e;
+  max-height:300px;overflow-y:auto;
+  white-space:pre-wrap;word-break:break-all;
+}
+.terminal-body::-webkit-scrollbar{width:4px}
+.terminal-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+/* ── 成功卡片 ────────────────────────────────────────── */
+.success-card{
+  display:none;text-align:center;padding:2rem;
+  background:linear-gradient(135deg,rgba(34,197,94,.08),rgba(34,197,94,.02));
+  border:1px solid rgba(34,197,94,.3);border-radius:1rem;margin-top:1.5rem;
+}
+.success-card.visible{display:block;animation:fadeIn .5s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.success-icon{font-size:3rem;margin-bottom:.8rem}
+.success-title{font-size:1.3rem;font-weight:700;color:var(--green);margin-bottom:.5rem}
+.success-url{
+  display:inline-block;padding:.6rem 1.2rem;margin-top:.8rem;
+  background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);
+  border-radius:.5rem;font-family:monospace;font-size:.85rem;
+  color:var(--green);word-break:break-all;cursor:pointer;
+  transition:background .2s;
+}
+.success-url:hover{background:rgba(34,197,94,.2)}
+
+/* ── 特性卡片 ────────────────────────────────────────── */
+.features{display:grid;grid-template-columns:repeat(2,1fr);gap:.8rem;margin-top:1.5rem}
+.feature{
+  padding:1rem;background:rgba(255,255,255,.02);
+  border:1px solid var(--border);border-radius:.75rem;
+  transition:border-color .2s;
+}
+.feature:hover{border-color:rgba(249,115,22,.3)}
+.feature-icon{font-size:1.5rem;margin-bottom:.4rem}
+.feature-title{font-size:.85rem;font-weight:600;margin-bottom:.2rem}
+.feature-desc{font-size:.72rem;color:var(--muted);line-height:1.4}
+
+/* ── 页脚 ────────────────────────────────────────────── */
+.footer{
+  text-align:center;padding:2rem 0;font-size:.72rem;
+  color:var(--muted);border-top:1px solid var(--border);
+  margin-top:2rem;
+}
+.footer a{color:var(--accent)}
+
+/* ── 响应式 ──────────────────────────────────────────── */
+@media(max-width:600px){
+  .container{padding:1.2rem 1rem}
+  .title{font-size:1.4rem}
+  .features{grid-template-columns:1fr}
+  .mode-selector{grid-template-columns:1fr}
+  .deploy-btn{padding:.8rem 2rem;font-size:1rem}
+}
+
+/* ── 折叠面板 ────────────────────────────────────────── */
+.collapsible-header{
+  display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;user-select:none;
+}
+.collapsible-header .arrow{
+  transition:transform .3s;font-size:.8rem;color:var(--muted);
+}
+.collapsible-header.open .arrow{transform:rotate(180deg)}
+.collapsible-body{
+  max-height:0;overflow:hidden;transition:max-height .4s ease;
+}
+.collapsible-body.open{max-height:600px}
+
+/* ── 错误 ────────────────────────────────────────────── */
+.error-banner{
+  display:none;padding:1rem;margin-top:1rem;
+  background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);
+  border-radius:.5rem;color:var(--red);font-size:.85rem;
+  text-align:center;
+}
+.error-banner.visible{display:block;animation:fadeIn .3s}
+</style>
+</head>
+<body>
+
+<!-- 粒子背景 -->
+<canvas id="particles"></canvas>
+
+<div class="container">
+
+  <!-- ── 头部 ──────────────────────────────── -->
+  <div class="header">
+    <div class="logo">🦞</div>
+    <h1 class="title">OpenClaw 全能压缩精华版</h1>
+    <p class="subtitle">原名 MoltBot / Clawdbot &mdash; 开源个人 AI 助手 | 一键部署，零操作</p>
+    <div class="badges">
+      <span class="badge">145K+ Stars</span>
+      <span class="badge">MIT License</span>
+      <span class="badge">Multi-Channel</span>
+      <span class="badge">Local-First</span>
+    </div>
+  </div>
+
+  <!-- ── 配置 (可折叠) ──────────────────────── -->
+  <div class="card">
+    <div class="collapsible-header" onclick="toggleConfig()" id="configHeader">
+      <div class="card-title"><span class="icon">&#9881;</span> 部署配置 <span style="font-size:.72rem;color:var(--muted);font-weight:400">(可选，默认自动最佳配置)</span></div>
+      <span class="arrow">&#9660;</span>
+    </div>
+    <div class="collapsible-body" id="configBody">
+      <div style="padding-top:1rem">
+
+        <!-- 部署模式 -->
+        <div class="form-group">
+          <label class="form-label">部署模式</label>
+          <div class="mode-selector">
+            <div class="mode-btn active" data-mode="auto" onclick="selectMode(this)">
+              <span class="mode-icon">&#9889;</span> 自动
+              <div class="mode-label">智能选择最佳方式</div>
+            </div>
+            <div class="mode-btn" data-mode="docker" onclick="selectMode(this)">
+              <span class="mode-icon">&#128051;</span> Docker
+              <div class="mode-label">容器化隔离部署</div>
+            </div>
+            <div class="mode-btn" data-mode="npm" onclick="selectMode(this)">
+              <span class="mode-icon">&#128230;</span> NPM
+              <div class="mode-label">全局安装，最快捷</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI 提供商 -->
+        <div class="form-group">
+          <label class="form-label">AI 模型提供商</label>
+          <select class="form-select" id="providerSelect" onchange="onProviderChange()">
+            <option value="anthropic">Anthropic (Claude) — 推荐</option>
+            <option value="openai">OpenAI (GPT-4o)</option>
+            <option value="ollama">Ollama (本地模型)</option>
+          </select>
+        </div>
+
+        <!-- API Key -->
+        <div class="form-group" id="apiKeyGroup">
+          <label class="form-label">API Key <span style="color:var(--muted)">(可稍后配置)</span></label>
+          <input class="form-input" type="password" id="apiKeyInput"
+                 placeholder="sk-ant-... 或 sk-..." autocomplete="off">
+          <p class="form-hint">留空也可部署，后续在 OpenClaw 配置中填写</p>
+        </div>
+
+        <!-- 端口 -->
+        <div class="form-group">
+          <label class="form-label">Gateway 端口</label>
+          <input class="form-input" type="number" id="portInput" value="18789" min="1024" max="65535">
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 一键部署按钮 ─────────────────────── -->
+  <div class="deploy-section">
+    <button class="deploy-btn" id="deployBtn" onclick="startDeploy()">
+      <span class="btn-text">&#127922; 一键部署</span>
+      <span class="spinner"></span>
+    </button>
+    <p style="font-size:.72rem;color:var(--muted);margin-top:.6rem">
+      点击即自动完成全部安装配置，无需任何操作
+    </p>
+  </div>
+
+  <!-- ── 进度区 ──────────────────────────────── -->
+  <div class="progress-section" id="progressSection">
+    <div class="card" style="margin-bottom:0">
+      <div class="progress-info">
+        <span class="progress-msg" id="progressMsg">准备中...</span>
+        <span class="progress-pct" id="progressPct">0%</span>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+
+      <!-- 终端 -->
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">deploy.sh</span>
+        </div>
+        <div class="terminal-body" id="terminalBody">等待部署启动...\n</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 错误横幅 ────────────────────────────── -->
+  <div class="error-banner" id="errorBanner"></div>
+
+  <!-- ── 成功卡片 ────────────────────────────── -->
+  <div class="success-card" id="successCard">
+    <div class="success-icon">&#127881;</div>
+    <div class="success-title">部署成功!</div>
+    <p style="color:var(--muted);font-size:.85rem;margin-bottom:.5rem">OpenClaw 已成功部署并运行</p>
+    <div class="success-url" id="successUrl" onclick="copyUrl()" title="点击复制">
+      Loading...
+    </div>
+    <p style="font-size:.72rem;color:var(--muted);margin-top:.8rem">
+      &#128204; 点击上方地址复制 | 在浏览器中打开即可使用
+    </p>
+  </div>
+
+  <!-- ── 特性展示 ────────────────────────────── -->
+  <div class="features">
+    <div class="feature">
+      <div class="feature-icon">&#128172;</div>
+      <div class="feature-title">全渠道接入</div>
+      <div class="feature-desc">WhatsApp, Telegram, Discord, Slack, 钉钉, 飞书, 微信, Teams 等</div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">&#129504;</div>
+      <div class="feature-title">多模型支持</div>
+      <div class="feature-desc">Claude, GPT-4o, Gemini, Ollama 本地模型，自由切换</div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">&#128274;</div>
+      <div class="feature-title">本地优先</div>
+      <div class="feature-desc">数据不离开你的设备，完全掌控隐私和安全</div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">&#129513;</div>
+      <div class="feature-title">技能生态</div>
+      <div class="feature-desc">ClawHub 5000+ 社区技能，浏览器控制、代码、自动化等</div>
+    </div>
+  </div>
+
+  <!-- ── 页脚 ─────────────────────────────── -->
+  <div class="footer">
+    <p>OpenClaw 全能压缩精华版 &mdash; 一键部署系统</p>
+    <p style="margin-top:.3rem">
+      <a href="https://github.com/openclaw/openclaw" target="_blank">GitHub</a> &middot;
+      <a href="https://docs.openclaw.ai" target="_blank">文档</a> &middot;
+      <a href="https://openclaw.ai" target="_blank">官网</a>
+    </p>
+  </div>
+
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════════════ */
+/*  粒子动画                                                                  */
+/* ═══════════════════════════════════════════════════════════════════════════ */
+(function(){
+  const c=document.getElementById('particles'),ctx=c.getContext('2d');
+  let w,h,particles=[];
+  function resize(){w=c.width=window.innerWidth;h=c.height=window.innerHeight}
+  window.addEventListener('resize',resize);resize();
+  class P{
+    constructor(){this.reset()}
+    reset(){
+      this.x=Math.random()*w;this.y=Math.random()*h;
+      this.vx=(Math.random()-.5)*.3;this.vy=(Math.random()-.5)*.3;
+      this.r=Math.random()*1.5+.5;this.a=Math.random()*.3+.1;
+    }
+    update(){
+      this.x+=this.vx;this.y+=this.vy;
+      if(this.x<0||this.x>w||this.y<0||this.y>h)this.reset();
+    }
+    draw(){
+      ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(249,115,22,${this.a})`;ctx.fill();
+    }
+  }
+  for(let i=0;i<60;i++)particles.push(new P());
+  function loop(){
+    ctx.clearRect(0,0,w,h);
+    particles.forEach(p=>{p.update();p.draw()});
+    // 连线
+    for(let i=0;i<particles.length;i++)for(let j=i+1;j<particles.length;j++){
+      const dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y;
+      const d=Math.sqrt(dx*dx+dy*dy);
+      if(d<120){
+        ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);
+        ctx.lineTo(particles[j].x,particles[j].y);
+        ctx.strokeStyle=`rgba(249,115,22,${.08*(1-d/120)})`;
+        ctx.lineWidth=.5;ctx.stroke();
+      }
+    }
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
+
+/* ═══════════════════════════════════════════════════════════════════════════ */
+/*  UI 交互逻辑                                                               */
+/* ═══════════════════════════════════════════════════════════════════════════ */
+let selectedMode='auto';
+let evtSource=null;
+let logPollTimer=null;
+
+function selectMode(el){
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  selectedMode=el.dataset.mode;
+}
+
+function toggleConfig(){
+  const h=document.getElementById('configHeader');
+  const b=document.getElementById('configBody');
+  h.classList.toggle('open');
+  b.classList.toggle('open');
+}
+
+function onProviderChange(){
+  const p=document.getElementById('providerSelect').value;
+  const g=document.getElementById('apiKeyGroup');
+  g.style.display=p==='ollama'?'none':'block';
+}
+
+/* ── 启动部署 ──────────────────────────────────────────── */
+function startDeploy(){
+  const btn=document.getElementById('deployBtn');
+  if(btn.disabled)return;
+
+  const config={
+    mode:selectedMode,
+    provider:document.getElementById('providerSelect').value,
+    api_key:document.getElementById('apiKeyInput').value.trim(),
+    port:parseInt(document.getElementById('portInput').value)||18789,
+  };
+
+  btn.disabled=true;
+  btn.classList.add('running');
+  document.getElementById('progressSection').classList.add('visible');
+  document.getElementById('errorBanner').classList.remove('visible');
+  document.getElementById('successCard').classList.remove('visible');
+  document.getElementById('terminalBody').textContent='正在启动部署...\n';
+
+  // 发起部署请求
+  fetch('/api/deploy',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(config),
+  })
+  .then(r=>r.json())
+  .then(data=>{
+    if(data.error){
+      showError(data.error);
+      resetBtn();
+      return;
+    }
+    // 连接 SSE
+    connectSSE();
+    // 轮询日志
+    startLogPoll();
+  })
+  .catch(err=>{
+    showError('无法连接到部署服务器: '+err.message);
+    resetBtn();
+  });
+}
+
+function connectSSE(){
+  if(evtSource)evtSource.close();
+  evtSource=new EventSource('/api/events');
+  evtSource.onmessage=function(e){
+    try{
+      const d=JSON.parse(e.data);
+      updateProgress(d);
+    }catch(ex){}
+  };
+  evtSource.onerror=function(){
+    // SSE 断开后尝试轮询状态
+    setTimeout(pollStatus,2000);
+  };
+}
+
+function pollStatus(){
+  fetch('/api/status').then(r=>r.json()).then(d=>updateProgress(d)).catch(()=>{});
+}
+
+function updateProgress(d){
+  document.getElementById('progressBar').style.width=d.percent+'%';
+  document.getElementById('progressPct').textContent=d.percent+'%';
+  document.getElementById('progressMsg').textContent=d.message||'';
+
+  if(d.status==='done'){
+    onDeployDone(d);
+  }else if(d.status==='error'){
+    showError(d.message);
+    resetBtn();
+    stopLogPoll();
+  }
+}
+
+function onDeployDone(d){
+  resetBtn();
+  stopLogPoll();
+  if(evtSource)evtSource.close();
+
+  const card=document.getElementById('successCard');
+  card.classList.add('visible');
+
+  const url=d.access_url||('http://127.0.0.1:'+document.getElementById('portInput').value);
+  document.getElementById('successUrl').textContent=url;
+  document.getElementById('successUrl').dataset.url=url;
+}
+
+function copyUrl(){
+  const url=document.getElementById('successUrl').dataset.url||document.getElementById('successUrl').textContent;
+  navigator.clipboard.writeText(url).then(()=>{
+    const el=document.getElementById('successUrl');
+    const orig=el.textContent;
+    el.textContent='已复制!';
+    setTimeout(()=>el.textContent=orig,1500);
+  });
+}
+
+function showError(msg){
+  const b=document.getElementById('errorBanner');
+  b.textContent=msg;
+  b.classList.add('visible');
+}
+
+function resetBtn(){
+  const btn=document.getElementById('deployBtn');
+  btn.disabled=false;
+  btn.classList.remove('running');
+}
+
+/* ── 日志轮询 ──────────────────────────────────────────── */
+function startLogPoll(){
+  stopLogPoll();
+  logPollTimer=setInterval(fetchLogs,1500);
+}
+function stopLogPoll(){
+  if(logPollTimer){clearInterval(logPollTimer);logPollTimer=null;}
+}
+function fetchLogs(){
+  fetch('/api/logs').then(r=>r.json()).then(d=>{
+    const body=document.getElementById('terminalBody');
+    // 过滤掉 PROGRESS 行，只显示可读日志
+    const lines=(d.logs||[]).filter(l=>!l.includes('PROGRESS:{'));
+    body.textContent=lines.join('\n')+'\n';
+    body.scrollTop=body.scrollHeight;
+  }).catch(()=>{});
+}
+</script>
+
+</body>
+</html>
