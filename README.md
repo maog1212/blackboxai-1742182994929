@@ -28,6 +28,14 @@ python douyin_kuaishou_screenshot.py \
   --output "./shots/auto.png"
 ```
 
+
+### 快速入口（本地默认）
+- 网页版 URL：`http://127.0.0.1:8765`
+- Android 安装包：`http://127.0.0.1:8765/download/android`
+- iOS 安装包：`http://127.0.0.1:8765/download/ios`
+
+> 启动后将 `127.0.0.1` 替换为你的服务器IP，即可给手机访问。
+
 ### 3) 手机下载门户（Android/iOS + 一键检测修复）
 
 ```bash
